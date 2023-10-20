@@ -1,19 +1,19 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react';
-import { CSVBankExtractLoader } from './components/Loaders/CSVBankExtractLoader';
-import { IAccountPeriod, TMapping, getWholePeriod, tagPeriods } from "./components/Data/Bank";
-import { Balance } from './components/Components/Balance';
-import { TagList } from './components/Components/TagList';
-import { BalanceHistoryChart } from './components/Charts/BalanceHistoryChart';
-import { TagHistoryChart } from './components/Charts/TagHistoryChart';
-import { TagRepartitionChart } from './components/Charts/TagRepartitionChart';
-import { TagHistoryMonthlyChart } from './components/Charts/TagMonthlyHistoryChart';
-import { AccountList } from './components/Components/AccountList';
-import { ExportMapping } from './components/Exporters/ExportMapping';
-import { MappingExtractLoader } from './components/Loaders/MappingExtractLoader';
-import { ExportTaggedCSV } from './components/Exporters/ExportTaggedCSV';
-import { Lines } from './components/Components/Lines';
+import { CSVBankExtractLoader } from '../components/Loaders/CSVBankExtractLoader';
+import { IAccountPeriod, TMapping, getWholePeriod, tagPeriods } from "../components/Data/Bank";
+import { Balance } from '../components/Components/Balance';
+import { TagList } from '../components/Components/TagList';
+import { BalanceHistoryChart } from '../components/Charts/BalanceHistoryChart';
+import { TagHistoryChart } from '../components/Charts/TagHistoryChart';
+import { TagRepartitionChart } from '../components/Charts/TagRepartitionChart';
+import { TagHistoryMonthlyChart } from '../components/Charts/TagMonthlyHistoryChart';
+import { AccountList } from '../components/Components/AccountList';
+import { ExportMapping } from '../components/Exporters/ExportMapping';
+import { MappingExtractLoader } from '../components/Loaders/MappingExtractLoader';
+import { ExportTaggedCSV } from '../components/Exporters/ExportTaggedCSV';
+import { Lines } from '../components/Components/Lines';
 
 export default function Home() {
 
