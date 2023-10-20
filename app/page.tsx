@@ -47,18 +47,6 @@ export default function Home() {
     }
   }, [mapping]);
 
-  const handleMappingLoading = useCallback((data: TMapping): void => {
-      setMapping(data);
-  }, []);
-
-  const onAccountSelect = useCallback((account: IAccountPeriod): void => {
-    setSelectedPeriod(account);
-  }, []);
-
-  const onTagSelect = useCallback((tag: string): void => {
-    setSelectedTag(tag);
-  }, []);
-
   useEffect(() => {
     if (periods.length > 0) {
       setIsDataGenerated(true);
@@ -88,15 +76,15 @@ export default function Home() {
             <ExportMapping periods={periods}></ExportMapping>
           }
           {isDataGenerated &&
-            <AccountList periods={periods} onAccountSelect={onAccountSelect}></AccountList>
+            <AccountList periods={periods} onAccountSelect={setSelectedPeriod}></AccountList>
           }
           {isDataGenerated &&
-            <TagList account={selectedPeriod} onTagSelect={onTagSelect}/>
+            <TagList account={selectedPeriod} onTagSelect={setSelectedTag}/>
           }
           </div>
 
           <div className='section-wrapper'>
-            <MappingExtractLoader onValuesChange={handleMappingLoading}/>
+            <MappingExtractLoader onValuesChange={setMapping}/>
             {isMappingLoaded &&
               <CSVBankExtractLoader onValuesChange={handleCSVToTagLoading}/>
             }
