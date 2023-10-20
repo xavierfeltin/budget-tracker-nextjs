@@ -1,0 +1,122 @@
+div.gridLayout {
+  display:grid;
+  grid-template-columns: 20% 80%;
+  grid-gap:8px;
+}
+
+div.leftColumn {
+  margin: 8px;
+}
+
+.rowChart {
+  width: 100%;
+}
+
+.columnChart {
+  width: 48%;
+  vertical-align: top;/*Fix for different     height elements*/
+  margin: 8px;
+  display: inline-block;
+}
+
+.time-chart-wrapper {
+  border: 1px solid lightgray;
+  height: 300px;
+  width: 90%;
+  margin: 8px;
+}
+
+.pie-chart-wrapper {
+  border: 1px solid lightgray;
+  width: 50%;
+  margin: 8px;
+}
+
+.section-wrapper {
+  border: 1px solid lightgray;
+  margin: 8px;
+  padding: 8px;
+}
+
+.btn-link-selected {
+  font-weight: bold;
+  color: red;
+  background: none!important;
+  border: none;
+  padding: 0!important;
+  margin: 5px;
+  /*optional*/
+  font-family: arial, sans-serif;
+  /*input has OS specific font-family*/
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.btn-link {
+  background: none!important;
+  border: none;
+  padding: 0!important;
+  margin: 5px;
+  /*optional*/
+  font-family: arial, sans-serif;
+  /*input has OS specific font-family*/
+  color: #069;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.vertical-menu {
+  display: block;
+  margin: 8px 0;
+}
+
+.row {
+  width: 100%;
+  text-align: center;
+}
+
+.column {
+  text-align: center;
+  width: 10%;
+  vertical-align: top;/*Fix for different     height elements*/
+  margin: 32px;
+  display: inline-block;
+  background-color: #87b5fa;
+  color: #fff;
+}
+
+.columnTitle {
+  min-width: 30%;
+  vertical-align: top;/*Fix for different     height elements*/
+  margin: 32px;
+  display: inline-block;
+  color: black;
+}
+
+h2.title {
+  font-size: 20px;
+}
+
+.button-upload {
+  background-color: #046daa;
+  border: none;
+  color: white;
+  padding: 8px 16px;
+  text-decoration: none;
+  align-items: center;
+  cursor: pointer;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
