@@ -1,34 +1,18 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { IAccountLine, IAccountPeriod } from "../Data/Bank";
-import { CSVUploader } from "./CSVUploader";
 
 export interface InputRangeProps {
+    files: File[];
     onValuesChange: (loadedData: IAccountPeriod[]) => void;
 }
 
 export function CSVBankExtractLoader({
+    files,
     onValuesChange} : InputRangeProps) {
 
     const [data, setData] = useState<IAccountPeriod[]>([]);
 
-    const handleFiles = (files: File[]) => {
-        setData([]);
-
-        for (let i = 0; i < files.length; i++) {
-            const file = files[i];
-            const fileReader = new FileReader();
-            fileReader.onload = function (event: ProgressEvent<FileReader>) {
-                let content: string = "";
-                if (event.target !== null) {
-                    content = event.target.result as string || "";
-                }
-                csvFileToArray(file.name, content);
-            };
-            fileReader.readAsText(file);
-        }
-    };
-
-    const csvFileToArray = (filename: string, csv: string) => {
+    const csvFileToArray = useCallback((filename: string, csv: string) => {
         const lineSeperator1 = "\r\n";
         const lineSeperator2 = "\n";
         let lineSeperator = lineSeperator1;
@@ -73,15 +57,38 @@ export function CSVBankExtractLoader({
             lines: lines,
             isAggregated: false
         };
-
         setData(prev => [...prev, data].sort((a, b) => a.end > b.end ? 1 : -1));
-    };
+    }, []);
+
+    const loadAccountPeriods = useCallback((files: File[]) => {
+        setData([]);
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            const fileReader = new FileReader();
+            fileReader.onload = function (event: ProgressEvent<FileReader>) {
+                let content: string = "";
+                if (event.target !== null) {
+                    content = event.target.result as string || "";
+                }
+                csvFileToArray(file.name, content);
+            };
+            fileReader.readAsText(file);
+        }
+    }, [csvFileToArray]);
+
+    useEffect(() => {
+        if (files.length > 0)
+        {
+            console.log("load csv files: " + files);
+            loadAccountPeriods(files);
+        }
+    }, [files, loadAccountPeriods]);
 
     useEffect(() => {
         onValuesChange(data);
-    }, [data, onValuesChange]);
+    }, [data, onValuesChange])
 
-    return (
-        <CSVUploader handleFiles={handleFiles} formId="load-accounts" actionLabel="Upload Bank accounts" />
+    return(
+        <></>
     )
 }

@@ -17,9 +17,11 @@ export function CSVUploader({
 
     const handleOnChange = (e: React.FormEvent<HTMLInputElement>) => {
         const nbFiles = e.currentTarget.files?.length || 0;
+        console.log(e.currentTarget.files);
         const files: File[] = [];
-        for (let i = 0; i < nbFiles; i++) {
-            if (e.currentTarget.files) {
+        if (e.currentTarget.files) {
+            for (let i = 0; i < nbFiles; i++) {
+                console.log("handleOnChange: " + e.currentTarget.files[i]);
                 files.push(e.currentTarget.files[i]);
             }
         }
