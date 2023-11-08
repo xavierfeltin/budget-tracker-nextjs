@@ -48,7 +48,7 @@ export function AccountFilesSelector({
                     )})
                 }
                 <div>
-                    <button type="submit" onClick={handleOnSubmit}>Load files</button>
+                    <button type="submit" onClick={handleOnSubmit} className="button-upload">Load files</button>
                 </div>
                 </>
             }

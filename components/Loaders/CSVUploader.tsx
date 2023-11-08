@@ -31,7 +31,7 @@ export function CSVUploader({
     return (
         <div style={{marginLeft: 5, marginRight: 5, marginTop: 5, marginBottom: 32}}>
             <form>
-                <label htmlFor={formId} className="button-upload">{actionLabel}</label>
+                <label htmlFor={formId} className="button-18">{actionLabel}</label>
                 <input
                     type={"file"}
                     id={formId}

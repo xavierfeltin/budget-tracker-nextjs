@@ -17,12 +17,14 @@ import { Lines } from '../components/Components/Lines';
 import Script from 'next/script';
 import { GoogleCSVUploader } from '@/components/Loaders/GoogleCSVUploader';
 import { CSVUploader } from '@/components/Loaders/CSVUploader';
+import { GoogleLogin } from '@/components/Components/GoogleLogin';
 
 export default function Home() {
 
   const [isTokenLoaded, setIsTokenLoaded] = useState<boolean>(false);
   const [isGAPILoaded, setIsGAPILoaded] = useState<boolean>(false);
   const [tokenClient, setTokenClient] = useState<unknown>({});
+  const [isLoggedOut, setIsLoggedOut] = useState<boolean>(true);
 
   const [listedFiles, setListedFiles] = useState<{id: string, name: string}[]>([]);
   const [files, setFiles] = useState<File[]>([]);
@@ -79,74 +81,7 @@ export default function Home() {
 
   // Authorization scopes required by the API; multiple scopes can be
   // included, separated by spaces.
-  //const SCOPES = 'https://www.googleapis.com/auth/drive.metadata.readonly';
   const SCOPES = 'https://www.googleapis.com/auth/drive';
-
-  const initializeGapiClient = async () => {
-    //@ts-ignore
-    await gapi.client.init({
-      'apiKey': API_KEY,
-      'discoveryDocs': [DISCOVERY_DOC], // Your API key will be automatically added to the Discovery Document URLs.
-    });
-    console.log("Client API initialized");
-    setIsGAPILoaded(true);
-  }
-
-  const getAccountFolderId = async () => {
-    let response;
-    try {
-      //@ts-ignore
-      response = await gapi.client.drive.files.list({
-        'pageSize': 2,
-        'corpora': 'user',
-        'includeItemsFromAllDrives': true,
-        'supportsAllDrives': true,
-        'orderBy': 'name',
-        'q': "name='Comptes' and mimeType = 'application/vnd.google-apps.folder'",
-        'fields': 'files(id, name)'
-      });
-    } catch (err) {
-      console.error(err);
-      return "";
-    }
-    const files = response.result.files;
-    if (!files || files.length == 0) {
-      console.warn('No files found');
-      return "";
-    }
-
-    if (files.length > 1) {
-      console.warn('Too many folders found');
-      return "";
-    }
-
-    return files[0].id;
-  }
-
-  const listFilesInFolder = async (folderId: string) => {
-    let response;
-    try {
-      //@ts-ignore
-      response = await gapi.client.drive.files.list({
-        'pageSize': 10,
-        'corpora': 'user',
-        'includeItemsFromAllDrives': true,
-        'supportsAllDrives': true,
-        'orderBy': 'name',
-        'q': "'" + folderId + "' in parents and mimeType='text/csv'",
-        'fields': 'files(id, name)'
-      });
-    } catch (err) {
-      console.error(err);
-      return;
-    }
-    const files: {id: string, name: string}[] = response.result.files;
-    if (!files || files.length == 0) {
-      console.warn('No files found');
-      return;
-    }
-    setListedFiles(files);
-  }
 
   const handleLoadedFiles = (loadedFiles: File[]) => {
     console.log("Loaded files : " + loadedFiles);
@@ -154,90 +89,40 @@ export default function Home() {
   }
 
   return (
-    <>
-        <Script async defer src="https://accounts.google.com/gsi/client" onLoad={() => {
-          //@ts-ignore
-          const token = google.accounts.oauth2.initTokenClient({
-            client_id: CLIENT_ID,
-            scope: SCOPES,
-            callback: '', // defined later
-          });
-          console.log("Token: " + JSON.stringify(token));
-          setTokenClient(token);
-          setIsTokenLoaded(true);
-        }} strategy='lazyOnload'></Script>
-
-        <Script src="https://apis.google.com/js/api.js" onLoad={() => {
-          //@ts-ignore
-          gapi.load('client', initializeGapiClient);
-        }} strategy='lazyOnload'></Script>
-
-
-    <button id={"btn-google-authent"} name={"btn-google-authent"} hidden={!(isTokenLoaded && isGAPILoaded)} onClick={() => {
-        //@ts-ignore
-        tokenClient.callback = async (resp: unknown) => {
-          //@ts-ignore
-          if (resp.error !== undefined) {
-            throw (resp);
-          }
-          getAccountFolderId().then((folderId: string) => {
-            listFilesInFolder(folderId);
-          });
-        };
-
-        //@ts-ignore
-        if (gapi.client.getToken() === null) {
-          // Prompt the user to select a Google Account and ask for consent to share their data
-          // when establishing a new session.
-          //@ts-ignore
-          tokenClient.requestAccessToken({prompt: 'consent'});
-        } else {
-          // Skip display of account chooser and consent dialog for an existing session.
-          //@ts-ignore
-          tokenClient.requestAccessToken({prompt: ''});
-        }
-    }}>
-      Log in
-    </button>
-
-    <button id={"btn-google-logout"} name={"btn-google-logout"} hidden={!(isTokenLoaded && isGAPILoaded)} onClick={() => {
-      //@ts-ignore
-      const token = gapi.client.getToken();
-      if (token !== null) {
-        //@ts-ignore
-        google.accounts.oauth2.revoke(token.access_token);
-        //@ts-ignore
-        gapi.client.setToken('');
-      }
-    }}>
-      Log out
-    </button>
-
-    <GoogleCSVUploader listedFiles={listedFiles} handleFiles={handleLoadedFiles}></GoogleCSVUploader>
-
     <div className='gridLayout'>
         <div className='leftColumn'>
-          <div className='section-wrapper'>
           {!isMappingLoaded &&
-            <>
-            <CSVUploader handleFiles={handleLoadedFiles} formId="load-accounts" actionLabel='Upload Bank accounts'></CSVUploader>
-            <CSVBankExtractLoader onValuesChange={handleCSVLoading} files={files}/>
-            </>
+            <GoogleLogin CLIENT_ID={CLIENT_ID} API_KEY={API_KEY} SCOPES={SCOPES} DISCOVERY_DOC={DISCOVERY_DOC} onChange={(status: boolean) => setIsLoggedOut(status)}></GoogleLogin>
           }
 
-          {isDataToTagLoaded &&
-            <ExportTaggedCSV periods={linesToTag}></ExportTaggedCSV>
+          {!isLoggedOut &&
+            <div className='section-wrapper'>
+              <GoogleCSVUploader handleFiles={handleLoadedFiles}></GoogleCSVUploader>
+            </div>
           }
-          {isDataGenerated &&
-            <ExportMapping periods={periods}></ExportMapping>
+
+          {!isMappingLoaded && isLoggedOut &&
+            <CSVUploader handleFiles={handleLoadedFiles} formId="load-accounts" actionLabel='Load from computer'></CSVUploader>
           }
-          {isDataGenerated &&
-            <AccountList periods={periods} onAccountSelect={setSelectedPeriod}></AccountList>
+
+          <CSVBankExtractLoader onValuesChange={handleCSVLoading} files={files}/>
+
+          {(isDataToTagLoaded || isDataGenerated) &&
+            <div className='section-wrapper'>
+              {isDataToTagLoaded &&
+                <ExportTaggedCSV periods={linesToTag}></ExportTaggedCSV>
+              }
+              {isDataGenerated &&
+                <ExportMapping periods={periods}></ExportMapping>
+              }
+              {isDataGenerated &&
+                <AccountList periods={periods} onAccountSelect={setSelectedPeriod}></AccountList>
+              }
+              {isDataGenerated &&
+                <TagList account={selectedPeriod} onTagSelect={setSelectedTag}/>
+              }
+            </div>
           }
-          {isDataGenerated &&
-            <TagList account={selectedPeriod} onTagSelect={setSelectedTag}/>
-          }
-          </div>
 
           <div className='section-wrapper'>
             <MappingExtractLoader onValuesChange={setMapping}/>
@@ -284,6 +169,5 @@ export default function Home() {
           </div>
         }
     </div>
-    </>
   )
 }
