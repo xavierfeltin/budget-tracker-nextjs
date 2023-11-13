@@ -45,6 +45,7 @@ export default function Home() {
   const [selectedMode, setSelectedMode] = useState<string>("charts");
 
   const handleCSVLoading = useCallback((data: IAccountPeriod[]): void => {
+    console.log("loaded : " + data.length);
     if (data.length > 0) {
         const wholePeriod = getWholePeriod(data);
         setPeriods([wholePeriod, ...data]);

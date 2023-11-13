@@ -27,6 +27,7 @@ export function CSVUploader({
                 files.push(e.currentTarget.files[i]);
             }
         }
+        console.log("CSV Uploaded nb files: " + files.length);
         handleFiles(files, searchMapping);
     };
 

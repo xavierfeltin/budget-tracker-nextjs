@@ -21,7 +21,7 @@ export function AccountList({
                 {periods.map((account, idx)=> {
                     const nbUntaggedLines = account.lines.filter((line) => line.tags.length === 0).length;
 
-                    return <button id={"btn-" + getAccountPeriodStr(account)}
+                    return <button id={"btn-" + getAccountPeriodStr(account)} key={"btn-" + getAccountPeriodStr(account)}
                             name={"btn-" + getAccountPeriodStr(account)}
                             className={(selectedPeriod === idx) ? "btn-link-selected vertical-menu" : "btn-link vertical-menu"}
                             onClick={() => {setSelectedPeriod(idx); onAccountSelect(periods[idx])}}>
