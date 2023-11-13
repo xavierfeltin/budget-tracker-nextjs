@@ -7,11 +7,13 @@ export interface GoogleFile {
 
 export interface InputRangeProps {
     files: GoogleFile[];
+    formId: string;
     handleSelection: (files: {id: string, name: string}[]) => void,
 }
 
 export function AccountFilesSelector({
     files,
+    formId,
     handleSelection
     }: InputRangeProps) {
 
@@ -22,13 +24,13 @@ export function AccountFilesSelector({
     }
 
     return (
-        <div>
+        <div id={"div-" + formId} style={{lineHeight: "200%"}}>
             {files.length > 0 &&
                 <>
                 {files.map((file: {id: string, name: string}, idx: number) => {
                     return (
-                        <div key={"div-select-files-" + idx}>
-                            <input name={"check-file-" + idx} type="checkbox" id={"check-file-" + idx} onChange={(e) => {
+                        <div key={"div-select-files-" + formId + "-" + idx}>
+                            <input name={"check-file-" + formId + "-" + idx} type="checkbox" id={"check-file-" + formId + "-" + idx} onChange={(e) => {
                                 if (e.currentTarget.checked) {
                                     setSelectedFiles((selected: {id: string, name: string}[]) => {
                                         return [...selected, file];
@@ -43,12 +45,12 @@ export function AccountFilesSelector({
                                     })
                                 }
                             }}/>
-                            <label htmlFor={"check-file-" + idx}>{file.name}</label>
+                            <label style={{wordBreak: "break-all"}} htmlFor={"check-file-" + formId + "-" + idx}>{file.name}</label>
                         </div>
                     )})
                 }
                 <div>
-                    <button type="submit" onClick={handleOnSubmit} className="button-upload">Load files</button>
+                    <button type="submit" id={"button-" + formId} onClick={handleOnSubmit} className="button-18">Load files</button>
                 </div>
                 </>
             }

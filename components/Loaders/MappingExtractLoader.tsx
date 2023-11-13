@@ -1,17 +1,18 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { IMappingLine, TMapping } from "../Data/Bank";
-import { CSVUploader } from "./CSVUploader";
 
 export interface InputRangeProps {
+    files: File[];
     onValuesChange: (loadedData: TMapping) => void;
 }
 
 export function MappingExtractLoader({
+    files,
     onValuesChange} : InputRangeProps) {
 
     const [data, setData] = useState<TMapping>({});
 
-    const handleFiles = (files: File[]) => {
+    const loadMappings = useCallback((files: File[]) => {
         setData({});
 
         for (let i = 0; i < files.length; i++) {
@@ -26,7 +27,7 @@ export function MappingExtractLoader({
             };
             fileReader.readAsText(file);
         }
-    };
+    }, []);
 
     const csvFileToArray = (filename: string, csv: string) => {
         const lineSeperator = "\n";
@@ -64,10 +65,18 @@ export function MappingExtractLoader({
     };
 
     useEffect(() => {
+        if (files.length > 0)
+        {
+            console.log("load csv files: " + files);
+            loadMappings(files);
+        }
+    }, [files, loadMappings]);
+
+    useEffect(() => {
         onValuesChange(data);
     }, [data, onValuesChange]);
 
     return (
-        <CSVUploader handleFiles={handleFiles} formId="load-mapping" actionLabel="Upload mapping"/>
+        <></>
     )
 }

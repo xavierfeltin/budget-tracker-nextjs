@@ -140,7 +140,7 @@ export function GoogleLogin({
                         tokenClient.requestAccessToken({prompt: ''});
                     }
             }}>
-                Load from Google Drive
+                Login
             </button>
         </div>
 

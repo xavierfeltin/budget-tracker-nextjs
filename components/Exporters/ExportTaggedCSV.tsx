@@ -20,6 +20,7 @@ export function ExportTaggedCSV({periods} : InputRangeProps) {
     }, []);
 
     useEffect(() => {
+        console.log("Export Tagged CSv");
         const csv: {}[] = [];
         for (let i = 0; i < periods.length; i++) {
             const lines = periods[i].lines;

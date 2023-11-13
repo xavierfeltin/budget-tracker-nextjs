@@ -14,20 +14,20 @@ import { ExportMapping } from '../components/Exporters/ExportMapping';
 import { MappingExtractLoader } from '../components/Loaders/MappingExtractLoader';
 import { ExportTaggedCSV } from '../components/Exporters/ExportTaggedCSV';
 import { Lines } from '../components/Components/Lines';
-import Script from 'next/script';
 import { GoogleCSVUploader } from '@/components/Loaders/GoogleCSVUploader';
 import { CSVUploader } from '@/components/Loaders/CSVUploader';
 import { GoogleLogin } from '@/components/Components/GoogleLogin';
 
 export default function Home() {
 
-  const [isTokenLoaded, setIsTokenLoaded] = useState<boolean>(false);
-  const [isGAPILoaded, setIsGAPILoaded] = useState<boolean>(false);
-  const [tokenClient, setTokenClient] = useState<unknown>({});
   const [isLoggedOut, setIsLoggedOut] = useState<boolean>(true);
+  const [isLoadingFromLocalDrive, setLoadingFromLocalDrive] = useState<boolean>(false);
 
-  const [listedFiles, setListedFiles] = useState<{id: string, name: string}[]>([]);
-  const [files, setFiles] = useState<File[]>([]);
+  const [accountFiles, setAccountFiles] = useState<File[]>([]);
+  const [mappingfiles, setMappingFiles] = useState<File[]>([]);
+
+  const [useAccount, setUseAccount] = useState<boolean>(false);
+  const [useMapping, setUseMapping] = useState<boolean>(false);
 
   const [isDataGenerated, setIsDataGenerated] = useState<boolean>(false);
   const [isMappingLoaded, setIsMappingLoaded] = useState<boolean>(false);
@@ -83,53 +83,106 @@ export default function Home() {
   // included, separated by spaces.
   const SCOPES = 'https://www.googleapis.com/auth/drive';
 
-  const handleLoadedFiles = (loadedFiles: File[]) => {
+  const handleLoadedFiles = (loadedFiles: File[], useMapping: boolean) => {
     console.log("Loaded files : " + loadedFiles);
-    setFiles(loadedFiles);
+
+    if (useMapping) {
+      setMappingFiles(loadedFiles)
+      setUseMapping(true);
+    }
+    else {
+      setAccountFiles(loadedFiles);
+      setUseAccount(true);
+    }
+  }
+
+  const handleLocalLoadedFiles = (loadedFiles: File[], useMapping: boolean) => {
+    setLoadingFromLocalDrive(true);
+    handleLoadedFiles(loadedFiles, useMapping);
   }
 
   return (
     <div className='gridLayout'>
         <div className='leftColumn'>
-          {!isMappingLoaded &&
-            <GoogleLogin CLIENT_ID={CLIENT_ID} API_KEY={API_KEY} SCOPES={SCOPES} DISCOVERY_DOC={DISCOVERY_DOC} onChange={(status: boolean) => setIsLoggedOut(status)}></GoogleLogin>
+
+          {!isLoadingFromLocalDrive &&
+            <div className='section-wrapper'>
+                <p>Load from Google Drive</p>
+                <GoogleLogin CLIENT_ID={CLIENT_ID} API_KEY={API_KEY} SCOPES={SCOPES} DISCOVERY_DOC={DISCOVERY_DOC} onChange={(status: boolean) => setIsLoggedOut(status)}></GoogleLogin>
+            </div>
           }
 
           {!isLoggedOut &&
-            <div className='section-wrapper'>
-              <GoogleCSVUploader handleFiles={handleLoadedFiles}></GoogleCSVUploader>
-            </div>
-          }
+            <>
+            {!useMapping &&
+              <>
+              <div className='section-wrapper'>
+                <p>Accounts</p>
+                <GoogleCSVUploader handleFiles={handleLoadedFiles} searchMapping={false}></GoogleCSVUploader>
+              </div>
 
-          {!isMappingLoaded && isLoggedOut &&
-            <CSVUploader handleFiles={handleLoadedFiles} formId="load-accounts" actionLabel='Load from computer'></CSVUploader>
-          }
-
-          <CSVBankExtractLoader onValuesChange={handleCSVLoading} files={files}/>
-
-          {(isDataToTagLoaded || isDataGenerated) &&
-            <div className='section-wrapper'>
-              {isDataToTagLoaded &&
-                <ExportTaggedCSV periods={linesToTag}></ExportTaggedCSV>
+              {!useAccount &&
+                <div className='section-wrapper'>
+                  <p>Mappings</p>
+                  <GoogleCSVUploader handleFiles={handleLoadedFiles} searchMapping={true}></GoogleCSVUploader>
+                </div>
               }
-              {isDataGenerated &&
-                <ExportMapping periods={periods}></ExportMapping>
-              }
-              {isDataGenerated &&
-                <AccountList periods={periods} onAccountSelect={setSelectedPeriod}></AccountList>
-              }
-              {isDataGenerated &&
-                <TagList account={selectedPeriod} onTagSelect={setSelectedTag}/>
-              }
-            </div>
-          }
-
-          <div className='section-wrapper'>
-            <MappingExtractLoader onValuesChange={setMapping}/>
-            {isMappingLoaded &&
-              <CSVBankExtractLoader onValuesChange={handleCSVToTagLoading} files={files}/>
+              </>
             }
-          </div>
+
+            {useAccount && !useMapping &&
+              <CSVBankExtractLoader onValuesChange={handleCSVLoading} files={accountFiles}/>
+            }
+
+            {useMapping &&
+              <>
+              <MappingExtractLoader onValuesChange={setMapping} files={mappingfiles}/>
+              <GoogleCSVUploader handleFiles={handleLoadedFiles} searchMapping={false}></GoogleCSVUploader>
+              <CSVBankExtractLoader onValuesChange={handleCSVToTagLoading} files={accountFiles}/>
+              </>
+            }
+            </>
+          }
+
+          {isLoggedOut &&
+            <div className='section-wrapper'>
+              <p>Load from computer</p>
+              {!useMapping &&
+                <>
+                <CSVUploader handleFiles={handleLocalLoadedFiles} searchMapping={false} formId="load-accounts" actionLabel='Load Accounts'></CSVUploader>
+                {!useAccount &&
+                  <CSVUploader handleFiles={handleLocalLoadedFiles} searchMapping={true} formId="load-mapping" actionLabel='Load Mapping'></CSVUploader>
+                }
+                </>
+              }
+
+              {useAccount && !useMapping &&
+               <CSVBankExtractLoader onValuesChange={handleCSVLoading} files={accountFiles}/>
+              }
+
+              {useMapping &&
+                <>
+                <MappingExtractLoader onValuesChange={setMapping} files={mappingfiles}/>
+                <CSVUploader handleFiles={handleLoadedFiles} searchMapping={false} formId="load-accounts" actionLabel='Load accounts to tag'></CSVUploader>
+                <CSVBankExtractLoader onValuesChange={handleCSVToTagLoading} files={accountFiles}/>
+                </>
+              }
+            </div>
+          }
+
+          {isDataToTagLoaded &&
+            <div className='section-wrapper'>
+              <ExportTaggedCSV periods={linesToTag}></ExportTaggedCSV>
+            </div>
+          }
+
+          {isDataGenerated &&
+            <div className='section-wrapper'>
+              <ExportMapping periods={periods}></ExportMapping>
+              <AccountList periods={periods} onAccountSelect={setSelectedPeriod}></AccountList>
+              <TagList account={selectedPeriod} onTagSelect={setSelectedTag}/>
+            </div>
+          }
         </div>
 
         {isDataGenerated &&

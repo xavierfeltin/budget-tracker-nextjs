@@ -2,12 +2,14 @@ import { useRef } from 'react';
 import './CSVUploader.css';
 
 export interface InputRangeProps {
+    searchMapping: boolean;
     formId: string;
     actionLabel: string;
-    handleFiles: (files: File[]) => void;
+    handleFiles: (files: File[], useMapping: boolean) => void;
 }
 
 export function CSVUploader({
+    searchMapping,
     formId,
     actionLabel,
     handleFiles} : InputRangeProps) {
@@ -25,7 +27,7 @@ export function CSVUploader({
                 files.push(e.currentTarget.files[i]);
             }
         }
-        handleFiles(files);
+        handleFiles(files, searchMapping);
     };
 
     return (

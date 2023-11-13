@@ -1,13 +1,14 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { AccountFilesSelector } from '../Components/AccountFilesSelector';
 
 export interface InputRangeProps {
     //listedFiles: {id: string, name: string}[];
-    handleFiles: (files: File[]) => void;
+    searchMapping: boolean;
+    handleFiles: (files: File[], useMapping: boolean) => void;
 }
 
 export function GoogleCSVUploader({
-    //listedFiles,
+    searchMapping,
     handleFiles} : InputRangeProps) {
 
     const [listedFiles, setListedFiles] = useState<{id: string, name: string}[]>([]);
@@ -43,7 +44,7 @@ export function GoogleCSVUploader({
         return files[0].id;
     }
 
-    const listFilesInFolder = async (folderId: string) => {
+    const listFilesInFolder = useCallback(async (folderId: string) => {
         let response;
         try {
             //@ts-ignore
@@ -53,7 +54,7 @@ export function GoogleCSVUploader({
             'includeItemsFromAllDrives': true,
             'supportsAllDrives': true,
             'orderBy': 'name',
-            'q': "'" + folderId + "' in parents and mimeType='text/csv'",
+            'q': searchMapping ? "'" + folderId + "' in parents and mimeType='text/csv' and name contains 'mapping'" : "'" + folderId + "' in parents and mimeType='text/csv' and not name contains 'mapping'",
             'fields': 'files(id, name)'
             });
         } catch (err) {
@@ -66,7 +67,7 @@ export function GoogleCSVUploader({
             return;
         }
         setListedFiles(files);
-    }
+    }, [searchMapping]);
 
     const getCSVFileContent = async (file: {id: string, name: string}) => {
         console.log("Get content for id " + file.id + ", name: " + file.name);
@@ -105,16 +106,16 @@ export function GoogleCSVUploader({
         }
 
         console.log("All files have been loaded");
-        handleFiles(files);
+        handleFiles(files, searchMapping);
     };
 
     useEffect(() => {
         getAccountFolderId().then((folderId: string) => {
             listFilesInFolder(folderId);
         });
-    }, [])
+    }, [listFilesInFolder])
 
     return (
-        <AccountFilesSelector files={listedFiles} handleSelection={handleSelection}></AccountFilesSelector>
+        <AccountFilesSelector formId={searchMapping ? "load-mapping" : "load-account"}files={listedFiles} handleSelection={handleSelection}></AccountFilesSelector>
     )
 }
