@@ -132,14 +132,14 @@ export default function Home() {
             }
 
             {useAccount && !useMapping &&
-              <CSVBankExtractLoader onValuesChange={handleCSVLoading} files={accountFiles}/>
+              <CSVBankExtractLoader idExtract="A" onValuesChange={handleCSVLoading} files={accountFiles}/>
             }
 
             {useMapping &&
               <>
               <MappingExtractLoader onValuesChange={setMapping} files={mappingfiles}/>
               <GoogleCSVUploader handleFiles={handleLoadedFiles} searchMapping={false}></GoogleCSVUploader>
-              <CSVBankExtractLoader onValuesChange={handleCSVToTagLoading} files={accountFiles}/>
+              <CSVBankExtractLoader idExtract="B" onValuesChange={handleCSVToTagLoading} files={accountFiles}/>
               </>
             }
             </>
@@ -158,14 +158,14 @@ export default function Home() {
               }
 
               {useAccount && !useMapping &&
-               <CSVBankExtractLoader onValuesChange={handleCSVLoading} files={accountFiles}/>
+               <CSVBankExtractLoader idExtract="C" onValuesChange={handleCSVLoading} files={accountFiles}/>
               }
 
               {useMapping &&
                 <>
                 <MappingExtractLoader onValuesChange={setMapping} files={mappingfiles}/>
                 <CSVUploader handleFiles={handleLoadedFiles} searchMapping={false} formId="load-accounts" actionLabel='Load accounts to tag'></CSVUploader>
-                <CSVBankExtractLoader onValuesChange={handleCSVToTagLoading} files={accountFiles}/>
+                <CSVBankExtractLoader idExtract="D" onValuesChange={handleCSVToTagLoading} files={accountFiles}/>
                 </>
               }
             </div>

@@ -10,7 +10,7 @@ import {
     PointElement,
     BarElement
   } from 'chart.js';
-import { Bar, Line } from 'react-chartjs-2';
+import { Bar } from 'react-chartjs-2';
 import { CHART_COLORS } from "./ColorBank";
 import { IAccountLine, aggregateByDate, aggregateByTags } from "../Data/Bank";
 import { Context } from "chartjs-plugin-datalabels";

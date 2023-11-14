@@ -1,8 +1,9 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { IAccountLine, IAccountPeriod } from "../Data/Bank";
 
 export interface InputRangeProps {
     files: File[];
+    idExtract:string;
     onValuesChange: (loadedData: IAccountPeriod[]) => void;
 }
 
@@ -51,7 +52,6 @@ const csvFileToArray = (filename: string, csv: string) => {
         lines: lines,
         isAggregated: false
     };
-    //setData(prev => [...prev, data].sort((a, b) => a.end > b.end ? 1 : -1));
     return data;
 }
 
@@ -62,10 +62,8 @@ export function CSVBankExtractLoader({
     const [data, setData] = useState<IAccountPeriod[]>([]);
 
     useEffect(() => {
-        console.log("received files: " + files.length);
         if (files.length > 0)
         {
-            console.log("load csv files: " + files);
             setData([]);
 
             for (let i = 0; i < files.length; i++) {
@@ -77,7 +75,15 @@ export function CSVBankExtractLoader({
                         content = event.target.result as string || "";
                     }
                     const data = csvFileToArray(file.name, content);
-                    setData(prev => [...prev, data].sort((a, b) => a.end > b.end ? 1 : -1));
+                    setData(prev => {
+                        if (prev.findIndex((val) => val.begin.toLocaleDateString() === data.begin.toLocaleDateString() && val.end.toLocaleDateString() === data.end.toLocaleDateString()) === -1)
+                        {
+                            return [...prev, data].sort((a, b) => a.end > b.end ? 1 : -1)
+                        }
+                        else {
+                            return [...prev];
+                        }
+                    });
                 };
                 fileReader.readAsText(file);
             }

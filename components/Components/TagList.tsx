@@ -36,7 +36,7 @@ export function TagList({
             <h1> Tags </h1>
 
             {tagsWithCount.map((tag, idx) => (
-                <button id={"btn-" + tag.tag} name={"btn-" + tag.tag} className={(selectedTag === tag.tag || (tag.tag === "Tous" && selectedTag === "")) ? "btn-link-selected " : "btn-link "} onClick={() => {setSelectedTag(idx === 0 ? "" : tagsWithCount[idx].tag); onTagSelect(idx === 0 ? "" : tagsWithCount[idx].tag);}}>
+                <button key={"btn-" + tag.tag} id={"btn-" + tag.tag} name={"btn-" + tag.tag} className={(selectedTag === tag.tag || (tag.tag === "Tous" && selectedTag === "")) ? "btn-link-selected " : "btn-link "} onClick={() => {setSelectedTag(idx === 0 ? "" : tagsWithCount[idx].tag); onTagSelect(idx === 0 ? "" : tagsWithCount[idx].tag);}}>
                     {tag.tag === "Tous" ? tag.tag : tag.tag + "(" + Math.floor(tag.frequency * 100) + "%)"}
                 </button>
             ))}
