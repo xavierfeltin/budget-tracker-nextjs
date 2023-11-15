@@ -1,9 +1,6 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css';
-//@ts-ignore
-//import { loadApi } from 'gdrive-fs';
-import Script from 'next/script';
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -18,37 +15,10 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
 
-  const gapiLoaded = () => {
-    const CLIENT_ID = "983498276769-rvir7h8fu2g1bjt6d8g4n3qkohca4c9q.apps.googleusercontent.com";
-    const CLIENT_SECRET = "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";
-    const REDIRECT_URL = "http://localhost:3000";
-
-    //@ts-ignore
-    console.log(gapi);
-
-    /*
-    const auth2 = new google.auth.OAuth2(
-      CLIENT_ID,
-      CLIENT_SECRET,
-      REDIRECT_URL
-    );
-
-    google.drive({
-      version: "v3",
-      auth: auth2
-    }).files.list({
-      pageSize: 10,
-    }).then((response) => {
-      console.log(response.data);
-    });
-    */
-  }
-
   return (
     <html lang="en">
       <body className={inter.className}>{children}</body>
       <title>Budget Tracker</title>
-
     </html>
   )
 }
