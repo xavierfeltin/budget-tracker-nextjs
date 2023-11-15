@@ -31,17 +31,17 @@ export function Lines({
                 </thead>
                 <tbody>
                 {lines.map((line, idx) => {
-                    return <tr id={"tr-" + idx}>
-                        <td id={"td-date" + idx}>
+                    return <tr key={"tr-" + idx}>
+                        <td key={"td-date" + idx}>
                             {line.date.toLocaleString("fr-FR", {year: 'numeric', month: 'numeric', day: 'numeric'})}
                         </td>
-                        <td id={"td-label" + idx}>
+                        <td key={"td-label" + idx}>
                             {line.label}
                         </td>
-                        <td id={"td-debit" + idx}>
+                        <td key={"td-debit" + idx}>
                             {line.debit?.toFixed(2)}
                         </td>
-                        <td id={"td-credit" + idx}>
+                        <td key={"td-credit" + idx}>
                             {line.credit?.toFixed(2)}
                         </td>
                     </tr>

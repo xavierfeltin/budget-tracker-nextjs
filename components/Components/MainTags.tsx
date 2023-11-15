@@ -29,11 +29,11 @@ export function MainTags({
     return (
         <div>
             <p> Balance for main tags </p>
-            {Object.keys(groups).sort((a, b) => groups[b].debit - groups[a].debit).map((key: string) => (
-                <div>
+            {Object.keys(groups).sort((a, b) => groups[b].debit - groups[a].debit).map((key: string, idx:number) => (
+                <div key={"div" + "-" + key + "-" + idx}>
                     <p><b>{key}</b>: (-{groups[key].debit} / Credit: +{groups[key].credit})</p>
-                    {Object.keys(groups[key].subTags).sort((a, b) => groups[key].subTags[b].debit - groups[key].subTags[a].debit).map((subKey: string) => (
-                        <p> - <b>{subKey}</b>: (-{groups[key].subTags[subKey].debit} / Credit: +{groups[key].subTags[subKey].credit})</p>
+                    {Object.keys(groups[key].subTags).sort((a, b) => groups[key].subTags[b].debit - groups[key].subTags[a].debit).map((subKey: string, idx2: number) => (
+                        <p  key={"p" + "-" + subKey + "-" + idx2}> - <b>{subKey}</b>: (-{groups[key].subTags[subKey].debit} / Credit: +{groups[key].subTags[subKey].credit})</p>
                     ))}
                 </div>
             ))}
