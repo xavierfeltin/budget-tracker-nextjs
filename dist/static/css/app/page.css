@@ -1,0 +1,101 @@
+/*!*******************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[12].oneOf[12].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[12].oneOf[12].use[3]!./components/Components/Balance.css ***!
+  \*******************************************************************************************************************************************************************************************************************************************************************************/
+.row {
+    width: 100%;
+    text-align: center;
+  }
+
+.column {
+    text-align: center;
+    width: 10%;
+    vertical-align: top;/*Fix for different     height elements*/
+    margin: 32px;
+    display: inline-block;
+    background-color: #87b5fa;
+    color: #fff;
+}
+
+.columnTitle {
+    min-width: 30%;
+    vertical-align: top;/*Fix for different     height elements*/
+    margin: 32px;
+    display: inline-block;
+    color: black;
+}
+
+h2.title {
+    font-size: 20px;
+}
+/*!*******************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[12].oneOf[12].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[12].oneOf[12].use[3]!./components/Components/TagList.css ***!
+  \*******************************************************************************************************************************************************************************************************************************************************************************/
+.btn-link-selected {
+    font-weight: bold;
+    color: red;
+    background: none!important;
+    border: none;
+    padding: 0!important;
+    margin: 5px;
+    /*optional*/
+    font-family: arial, sans-serif;
+    /*input has OS specific font-family*/
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.btn-link {
+    background: none!important;
+    border: none;
+    padding: 0!important;
+    margin: 5px;
+    /*optional*/
+    font-family: arial, sans-serif;
+    /*input has OS specific font-family*/
+    color: #069;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.vertical-menu {
+    display: block;
+    margin: 8px 0;
+}
+/*!***********************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[12].oneOf[12].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[12].oneOf[12].use[3]!./components/Components/AccountList.css ***!
+  \***********************************************************************************************************************************************************************************************************************************************************************************/
+.btn-link-selected {
+    font-weight: bold;
+    color: red;
+    background: none!important;
+    border: none;
+    padding: 0!important;
+    margin: 5px;
+    /*optional*/
+    font-family: arial, sans-serif;
+    /*input has OS specific font-family*/
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.btn-link {
+    background: none!important;
+    border: none;
+    padding: 0!important;
+    margin: 5px;
+    /*optional*/
+    font-family: arial, sans-serif;
+    /*input has OS specific font-family*/
+    color: #069;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.vertical-menu {
+    display: block;
+    margin: 8px 0;
+}
+/*!********************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[12].oneOf[12].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[12].oneOf[12].use[3]!./components/Loaders/CSVUploader.css ***!
+  \********************************************************************************************************************************************************************************************************************************************************************************/
+
