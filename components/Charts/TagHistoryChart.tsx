@@ -137,16 +137,21 @@ export function TagHistoryChart({
                         display: true,
                         text: 'Amount'
                     },
-                    stacked: true
+                    stacked: true,
+                    grace: '5%'
                 }
             },
             plugins: {
                 legend: {
-                   position: 'top' as const,
+                   position: 'bottom' as const,
                 },
                 title: {
                     display: true,
-                    text: "Debit history of " + (tag || "Tous")
+                    text: "Debit history of " + (tag || "Tous"),
+                    padding: {
+                        top: 5,
+                        bottom: 25
+                    }
                 },
                 datalabels: {
                     borderRadius: 25,

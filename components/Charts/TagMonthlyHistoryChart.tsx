@@ -73,6 +73,7 @@ export function TagHistoryMonthlyChart({
             return dA > dB ? 1 : -1;
         });
 
+        /*
         // Dataset to cover the tag
         let tagHistoryDebit = Object.keys(groupByDate).sort((a, b) => {
             let dA = new Date(2023, parseInt(a.split("/")[1]) - 1, parseInt(a.split("/")[0]));
@@ -88,6 +89,7 @@ export function TagHistoryMonthlyChart({
 
         };
         datasets.push(dataset);
+        */
 
         // Datasets to cover the sub tags
         const processedTags: string[] = [];
@@ -137,16 +139,21 @@ export function TagHistoryMonthlyChart({
                     title: {
                         display: true,
                         text: 'Amount'
-                    }
+                    },
+                    grace: '5%'
                 }
             },
             plugins: {
                 legend: {
-                   position: 'top' as const,
+                   position: 'bottom' as const,
                 },
                 title: {
                     display: true,
-                    text: "Debit monthly history of " + (tag || "Tous")
+                    text: "Debit monthly history of " + (tag || "Tous"),
+                    padding: {
+                        top: 5,
+                        bottom: 25
+                    }
                 },
                 datalabels: {
                     align: 'end',

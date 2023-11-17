@@ -17,6 +17,7 @@ import { Lines } from '../components/Components/Lines';
 import { GoogleCSVUploader } from '@/components/Loaders/GoogleCSVUploader';
 import { CSVUploader } from '@/components/Loaders/CSVUploader';
 import { GoogleLogin } from '@/components/Components/GoogleLogin';
+import { TagMonthlyTendencyChart } from '@/components/Charts/TagMonthlyTendencyChart';
 
 export default function Home() {
 
@@ -209,6 +210,7 @@ export default function Home() {
 
                 {selectedTag !== "" &&
                   <div>
+                    <TagMonthlyTendencyChart accountLines={selectedPeriod.lines} tag={selectedTag}/>
                     <TagHistoryMonthlyChart accountLines={selectedPeriod.lines} tag={selectedTag}/>
                     <TagHistoryChart accountLines={selectedPeriod.lines} tag={selectedTag}/>
                     <TagRepartitionChart accountLines={selectedPeriod.lines} tag={selectedTag}/>
