@@ -49,7 +49,7 @@ export function TagRepartitionChart({
     tag,
     }: InputRangeProps): JSX.Element {
 
-    const [chartOption, setChartOption] = useState<IChartOption>({responsive: true, animation: {}, plugins: {}});
+    const [chartOption, setChartOption] = useState<IChartOption>({responsive: true, animation: {}, plugins: {}, layout: {}});
     const [chartData, setChartData] = useState<IChartData>({labels: [], datasets: []});
 
     useEffect(() => {
