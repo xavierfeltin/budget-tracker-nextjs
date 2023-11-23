@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
     Chart as ChartJS,
     ArcElement,
@@ -33,6 +33,7 @@ export interface IChartOption {
     responsive: boolean;
     animation: any;
     plugins: any;
+    layout: any;
 }
 
 ChartJS.register(
@@ -54,10 +55,17 @@ export function TagRepartitionChart({
     useEffect(() => {
         const taggedLines = tag === "" ? accountLines : accountLines.filter((line) => line.tags.indexOf(tag) !== -1);
         const groupByTag = aggregateByTags(taggedLines, -1, tag);
-        //const tagLabels = Object.keys(groupByTag).sort();
-        //const data: number[] = Object.keys(groupByTag).filter((subTag) => groupByTag[subTag].debit !== 0).sort().map((subTag) => groupByTag[subTag].debit);
-        const tagLabels = Object.keys(groupByTag).filter((subTag) => groupByTag[subTag].debit !== 0).sort();
-        const data: number[] = tagLabels.filter((subTag) => groupByTag[subTag].debit !== 0).map((subTag) => groupByTag[subTag].debit);
+
+        // Datasets to cover the sub tags
+        const tags = Object.keys(groupByTag).filter((subTag) => groupByTag[subTag].debit !== 0).sort();
+        const processedTags: string[] = [];
+        const data: number[] = [];
+        for (let i = 0; i < tags.length; i++) {
+            const subTaggedLines = taggedLines.filter((line) => line.tags.indexOf(tags[i]) !== -1 && !line.tags.some(t => processedTags.includes(t)));
+            const tagData: number = subTaggedLines.map((line) => line.debit || 0).reduce((a, sum) => a + sum);
+            data.push(tagData);
+            processedTags.push(tags[i]);
+        }
 
         let datasets: IChartDataset[] = [];
         let dataset: IChartDataset = {
@@ -73,7 +81,7 @@ export function TagRepartitionChart({
 
 
         let dataToDisplay: IChartData = {
-            labels: tagLabels,
+            labels: tags,
             datasets: datasets
         };
 
@@ -84,12 +92,21 @@ export function TagRepartitionChart({
             animation: {
                 duration: 0
             },
+            layout: {
+                padding: {
+                    left: 40,
+                    right: 40,
+                    top: 40,
+                    bottom: 40
+                }
+            },
             plugins: {
                 legend: {
                    position: 'top' as const,
+                   display: false
                 },
                 title: {
-                    display: true,
+                    display: false,
                     text: "Repartition of " + (tag || "Tous")
                 },
                 datalabels: {
@@ -113,8 +130,8 @@ export function TagRepartitionChart({
    }, [accountLines, tag]);
 
     return (
-        <div className="pie-chart-wrapper">
-            <Pie options={chartOption} data={chartData}/>
+        <div className="month-chart-wrapper">
+            <Pie className="centered-canvas" options={chartOption} data={chartData}/>
         </div>
    )
 }

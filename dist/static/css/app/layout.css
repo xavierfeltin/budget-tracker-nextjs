@@ -98,6 +98,13 @@ div.leftColumn {
   margin: 8px;
 }
 
+.month-chart-wrapper {
+  border: 1px solid lightgray;
+  height: 300px;
+  width: 30%;
+  margin: 8px;
+}
+
 .pie-chart-wrapper {
   border: 1px solid lightgray;
   width: 50%;
@@ -241,4 +248,8 @@ code {
   cursor: not-allowed;
   background: rgba(0, 0, 0, .08);
   color: rgba(0, 0, 0, .3);
+}
+
+.centered-canvas {
+  margin: 0 auto;
 }

@@ -60,7 +60,7 @@ export function TagHistoryChart({
 
         const taggedLines = tag === "" ? accountLines : accountLines.filter((line) => line.tags.indexOf(tag) !== -1);
         const groupByTag = aggregateByTags(taggedLines, -1, tag);
-        const tags = Object.keys(groupByTag);
+        const tags = Object.keys(groupByTag).sort();
 
         const groupByDate = aggregateByDate(taggedLines);
         const dateLabels =  Object.keys(groupByDate).sort((a, b) => {

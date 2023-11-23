@@ -1,0 +1,8 @@
+.chart-container {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.chart-row {
+    width: 100%;
+}

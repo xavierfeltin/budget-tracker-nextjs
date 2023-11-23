@@ -18,6 +18,7 @@ import { GoogleCSVUploader } from '@/components/Loaders/GoogleCSVUploader';
 import { CSVUploader } from '@/components/Loaders/CSVUploader';
 import { GoogleLogin } from '@/components/Components/GoogleLogin';
 import { TagMonthlyTendencyChart } from '@/components/Charts/TagMonthlyTendencyChart';
+import { TagByMonthChart } from '@/components/Charts/TagByMonthChart';
 
 export default function Home() {
 
@@ -204,16 +205,24 @@ export default function Home() {
                 {selectedTag === "" &&
                   <div>
                     <BalanceHistoryChart accountLines={selectedPeriod.lines}/>
+                    <TagHistoryMonthlyChart accountLines={selectedPeriod.lines} tag={selectedTag}/>
+                    <div className="chart-container">
+                    <TagByMonthChart accountLines={selectedPeriod.lines} tag={selectedTag}/>
                     <TagRepartitionChart accountLines={selectedPeriod.lines} tag={selectedTag}/>
+                    </div>
                   </div>
                 }
 
                 {selectedTag !== "" &&
                   <div>
                     <TagMonthlyTendencyChart accountLines={selectedPeriod.lines} tag={selectedTag}/>
-                    <TagHistoryMonthlyChart accountLines={selectedPeriod.lines} tag={selectedTag}/>
-                    <TagHistoryChart accountLines={selectedPeriod.lines} tag={selectedTag}/>
+                    <div className="chart-container">
+                    <TagByMonthChart accountLines={selectedPeriod.lines} tag={selectedTag}/>
                     <TagRepartitionChart accountLines={selectedPeriod.lines} tag={selectedTag}/>
+                    </div>
+
+                    <TagHistoryChart accountLines={selectedPeriod.lines} tag={selectedTag}/>
+
                   </div>
                 }
               </div>
