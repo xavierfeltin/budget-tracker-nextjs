@@ -56,7 +56,7 @@ export function TagByMonthChart({
         }
 
         const dataByPeriod: IPeriodData[] = [];
-        for (let i = 0; i < dateLabels.length; i++) {
+        for (let i = dateLabels.length - 1; i >= 0; i--) {
             dataByPeriod.push({
                 period: dateLabels[i],
                 data: dataByTag.filter((d) => d.data[i] > 0).map((d) => d.data[i]),

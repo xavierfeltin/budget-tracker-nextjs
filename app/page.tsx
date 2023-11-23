@@ -205,7 +205,6 @@ export default function Home() {
                 {selectedTag === "" &&
                   <div>
                     <BalanceHistoryChart accountLines={selectedPeriod.lines}/>
-                    <TagHistoryMonthlyChart accountLines={selectedPeriod.lines} tag={selectedTag}/>
                     <div className="chart-container">
                     <TagByMonthChart accountLines={selectedPeriod.lines} tag={selectedTag}/>
                     <TagRepartitionChart accountLines={selectedPeriod.lines} tag={selectedTag}/>
