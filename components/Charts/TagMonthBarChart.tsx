@@ -77,7 +77,7 @@ export function TagMonthBarChart({
         }
 
         const dataset: IChartDataset = {
-            label: tag + " for " + period,
+            label: "Debit " + tag + " for " + period,
             yAxisID: 'y',
             data: sortedData,
             backgroundColor: colors

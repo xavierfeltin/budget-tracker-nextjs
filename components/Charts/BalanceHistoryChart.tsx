@@ -58,7 +58,6 @@ export function BalanceHistoryChart({
 
     const chartReference = useRef(null);
 
-
     useEffect(() => {
         if (chartReference) {
             const chart = chartReference.current as ChartJS|null;

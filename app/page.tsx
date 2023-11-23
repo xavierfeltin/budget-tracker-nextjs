@@ -214,7 +214,9 @@ export default function Home() {
 
                 {selectedTag !== "" &&
                   <div>
-                    <TagMonthlyTendencyChart accountLines={selectedPeriod.lines} tag={selectedTag}/>
+                    {selectedPeriod.isAggregated &&
+                      <TagMonthlyTendencyChart accountLines={selectedPeriod.lines} tag={selectedTag}/>
+                    }
                     <div className="chart-container">
                     <TagByMonthChart accountLines={selectedPeriod.lines} tag={selectedTag}/>
                     <TagRepartitionChart accountLines={selectedPeriod.lines} tag={selectedTag}/>

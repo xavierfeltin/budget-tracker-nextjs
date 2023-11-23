@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import {
     Chart as ChartJS,
     ArcElement,
@@ -62,7 +62,8 @@ export function TagRepartitionChart({
         const data: number[] = [];
         for (let i = 0; i < tags.length; i++) {
             const subTaggedLines = taggedLines.filter((line) => line.tags.indexOf(tags[i]) !== -1 && !line.tags.some(t => processedTags.includes(t)));
-            const tagData: number = subTaggedLines.map((line) => line.debit || 0).reduce((a, sum) => a + sum);
+            const debits = subTaggedLines.map((line) => line.debit || 0);
+            const tagData: number = debits.length > 0 ? debits.reduce((a, sum) => a + sum) : 0;
             data.push(tagData);
             processedTags.push(tags[i]);
         }

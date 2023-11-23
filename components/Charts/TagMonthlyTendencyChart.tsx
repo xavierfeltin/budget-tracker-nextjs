@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
     Chart as ChartJS,
     LinearScale,
@@ -60,6 +60,19 @@ export function TagMonthlyTendencyChart({
 
     const [chartOption, setChartOption] = useState<IChartOption>({responsive: true, animation: {}, scales: {}, plugins: {}});
     const [chartData, setChartData] = useState<IChartData>({labels: [], datasets: []});
+
+    const chartReference = useRef(null);
+
+    useEffect(() => {
+        if (chartReference) {
+            const chart = chartReference.current as ChartJS|null;
+            if (chart && chartData.datasets.length > 0) {
+                const width = chart.ctx.canvas.parentElement?.style.width ? chart.ctx.canvas.width : 1370;
+                chart.resize(width, chart.canvas.height);
+                chart.update();
+            }
+        }
+    },[chartReference, chartData]);
 
     useEffect(() => {
         let datasets: IChartDataset[] = [];
@@ -158,7 +171,7 @@ export function TagMonthlyTendencyChart({
 
     return (
         <div className="time-chart-wrapper">
-            <Line options={chartOption} data={chartData}/>
+            <Line ref={chartReference} options={chartOption} data={chartData}/>
         </div>
    )
 }
