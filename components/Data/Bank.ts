@@ -31,6 +31,14 @@ export interface ITag {
     frequency: number;
 }
 
+export type TBudget = {[tag: string]: number}
+export interface ITagBudget {
+    tag: string;
+    allowed: number;
+    consumed: number;
+    lines: IAccountLine[];
+}
+
 export function aggregateByTags(lines: IAccountLine[], tagLevel: number, excludeTag: string): TagLine {
     let agregate: TagLine = {};
     let isRecursive = tagLevel < 0;

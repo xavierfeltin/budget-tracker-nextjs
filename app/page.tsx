@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { CSVBankExtractLoader } from '../components/Loaders/CSVBankExtractLoader';
-import { IAccountPeriod, TMapping, getWholePeriod, tagPeriods } from "../components/Data/Bank";
+import { IAccountPeriod, TBudget, TMapping, getWholePeriod, tagPeriods } from "../components/Data/Bank";
 import { Balance } from '../components/Components/Balance';
 import { TagList } from '../components/Components/TagList';
 import { BalanceHistoryChart } from '../components/Charts/BalanceHistoryChart';
@@ -19,6 +19,7 @@ import { CSVUploader } from '@/components/Loaders/CSVUploader';
 import { GoogleLogin } from '@/components/Components/GoogleLogin';
 import { TagMonthlyTendencyChart } from '@/components/Charts/TagMonthlyTendencyChart';
 import { TagByMonthChart } from '@/components/Charts/TagByMonthChart';
+import { Budget } from '@/components/Components/Budget';
 
 export default function Home() {
 
@@ -44,7 +45,18 @@ export default function Home() {
   });
   const [mapping, setMapping] = useState<TMapping>({});
   const [linesToTag, setLinesToTag] = useState<IAccountPeriod[]>([]);
-  const [selectedMode, setSelectedMode] = useState<string>("charts");
+  const [budgets, setBudgets] = useState<TBudget>({
+    "Loisir": 100,
+    "Nourriture": 650,
+    "Vetements": 50,
+    "Sortie": 200,
+    "Café": 50,
+    "Restaurant": 150,
+    "Marché": 150,
+    "Supermarché": 400,
+    "Sommelier": 30
+  });
+  const [selectedMode, setSelectedMode] = useState<string>("expenses");
 
   const handleCSVLoading = useCallback((data: IAccountPeriod[]): void => {
     console.log("loaded : " + data.length);
@@ -102,6 +114,18 @@ export default function Home() {
   const handleLocalLoadedFiles = (loadedFiles: File[], useMapping: boolean) => {
     setLoadingFromLocalDrive(true);
     handleLoadedFiles(loadedFiles, useMapping);
+  }
+
+  const handlePeriodSelection = (period: IAccountPeriod) => {
+    setSelectedPeriod(period);
+
+    //Force to display expenses view when selecting aggregated period when budget was displayed
+    setSelectedMode((old) => {
+      if (old === "budget" && period.isAggregated) {
+        return "expenses";
+      }
+      return old;
+    });
   }
 
   return (
@@ -182,7 +206,7 @@ export default function Home() {
           {isDataGenerated &&
             <div className='section-wrapper'>
               <ExportMapping periods={periods}></ExportMapping>
-              <AccountList periods={periods} onAccountSelect={setSelectedPeriod}></AccountList>
+              <AccountList periods={periods} onAccountSelect={handlePeriodSelection}></AccountList>
               <TagList account={selectedPeriod} onTagSelect={setSelectedTag}/>
             </div>
           }
@@ -193,14 +217,20 @@ export default function Home() {
             <Balance account={selectedPeriod} tag={selectedTag}/>
 
             <div>
-              <button id={"btn-display-charts"} name={"btn-display-charts"} className={selectedMode === "charts" ? "btn-link-selected " : "btn-link "} onClick={() => {setSelectedMode("charts")}}>
-                  Display charts
+              <button id={"btn-display-expenses"} name={"btn-display-expenses"} className={selectedMode === "expenses" ? "btn-link-selected " : "btn-link "} onClick={() => {setSelectedMode("expenses")}}>
+                  Display Expenses
               </button>
+              {!selectedPeriod["isAggregated"] &&
+                <button id={"btn-display-budget"} name={"btn-display-budget"} className={selectedMode === "budget" ? "btn-link-selected " : "btn-link "} onClick={() => {setSelectedMode("budget")}}>
+                    Display Budget
+                </button>
+              }
               <button id={"btn-display-lines"} name={"btn-display-lines"} className={selectedMode === "lines" ? "btn-link-selected " : "btn-link "} onClick={() => {setSelectedMode("lines")}}>
-                  Display account lines
+                  Display Account lines
               </button>
             </div>
-            {selectedMode === "charts" &&
+
+            {selectedMode === "expenses" &&
               <div>
                 {selectedTag === "" &&
                   <div>
@@ -231,6 +261,10 @@ export default function Home() {
 
             {selectedMode === "lines" &&
               <Lines accountLines={selectedPeriod.lines} tag={selectedTag}/>
+            }
+
+            {selectedMode === "budget" &&
+               <Budget accountLines={selectedPeriod.lines} budgets={budgets} tag={selectedTag}></Budget>
             }
           </div>
         }

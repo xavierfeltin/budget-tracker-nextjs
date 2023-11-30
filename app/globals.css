@@ -92,6 +92,24 @@ div.leftColumn {
   color: #fff;
 }
 
+.budgetOk {
+  text-align: center;
+  width: 10%;
+  vertical-align: top;/*Fix for different     height elements*/
+  margin: 32px;
+  display: inline-block;
+  background-color: #20e0a7;
+}
+
+.budgetNok {
+  text-align: center;
+  width: 10%;
+  vertical-align: top;/*Fix for different     height elements*/
+  margin: 32px;
+  display: inline-block;
+  background-color: #ff4a4a;
+}
+
 .columnTitle {
   min-width: 30%;
   vertical-align: top;/*Fix for different     height elements*/
