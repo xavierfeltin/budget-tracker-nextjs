@@ -39,6 +39,13 @@ export interface ITagBudget {
     lines: IAccountLine[];
 }
 
+
+export enum EDocumentType {
+    ACCOUNT = "ACCOUNT",
+    MAPPING = "MAPPING",
+    BUDGET  = "BUDGET",
+}
+
 export function aggregateByTags(lines: IAccountLine[], tagLevel: number, excludeTag: string): TagLine {
     let agregate: TagLine = {};
     let isRecursive = tagLevel < 0;

@@ -2,13 +2,12 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { CSVBankExtractLoader } from '../components/Loaders/CSVBankExtractLoader';
-import { IAccountPeriod, TBudget, TMapping, getWholePeriod, tagPeriods } from "../components/Data/Bank";
+import { EDocumentType, IAccountPeriod, TBudget, TMapping, getWholePeriod, tagPeriods } from "../components/Data/Bank";
 import { Balance } from '../components/Components/Balance';
 import { TagList } from '../components/Components/TagList';
 import { BalanceHistoryChart } from '../components/Charts/BalanceHistoryChart';
 import { TagHistoryChart } from '../components/Charts/TagHistoryChart';
 import { TagRepartitionChart } from '../components/Charts/TagRepartitionChart';
-import { TagHistoryMonthlyChart } from '../components/Charts/TagMonthlyHistoryChart';
 import { AccountList } from '../components/Components/AccountList';
 import { ExportMapping } from '../components/Exporters/ExportMapping';
 import { MappingExtractLoader } from '../components/Loaders/MappingExtractLoader';
@@ -31,6 +30,7 @@ export default function Home() {
 
   const [useAccount, setUseAccount] = useState<boolean>(false);
   const [useMapping, setUseMapping] = useState<boolean>(false);
+  const [useBudget, setUseBudget] = useState<boolean>(false);
 
   const [isDataGenerated, setIsDataGenerated] = useState<boolean>(false);
   const [isMappingLoaded, setIsMappingLoaded] = useState<boolean>(false);
@@ -45,17 +45,7 @@ export default function Home() {
   });
   const [mapping, setMapping] = useState<TMapping>({});
   const [linesToTag, setLinesToTag] = useState<IAccountPeriod[]>([]);
-  const [budgets, setBudgets] = useState<TBudget>({
-    "Loisir": 100,
-    "Nourriture": 650,
-    "Vetements": 50,
-    "Sortie": 200,
-    "Café": 50,
-    "Restaurant": 150,
-    "Marché": 150,
-    "Supermarché": 400,
-    "Sommelier": 30
-  });
+  const [budgets, setBudgets] = useState<TBudget>({});
   const [selectedMode, setSelectedMode] = useState<string>("expenses");
 
   const handleCSVLoading = useCallback((data: IAccountPeriod[]): void => {
@@ -98,9 +88,36 @@ export default function Home() {
   // included, separated by spaces.
   const SCOPES = 'https://www.googleapis.com/auth/drive';
 
-  const handleLoadedFiles = (loadedFiles: File[], useMapping: boolean) => {
+  const handleLoadedFiles = (loadedFiles: File[], documentType: EDocumentType) => {
     console.log("Loaded files : " + loadedFiles);
 
+    switch(documentType) {
+      case EDocumentType.ACCOUNT:
+        setAccountFiles(loadedFiles);
+        setUseAccount(true);
+        break;
+      case EDocumentType.MAPPING:
+        setMappingFiles(loadedFiles)
+        setUseMapping(true);
+        break;
+      case EDocumentType.BUDGET:
+        setBudgets({
+          "Loisir": 100,
+          "Nourriture": 650,
+          "Vetements": 50,
+          "Sortie": 200,
+          "Café": 50,
+          "Restaurant": 150,
+          "Marché": 150,
+          "Supermarché": 400,
+          "Sommelier": 30
+        });
+        setUseBudget(true);
+        break;
+      default: console.warn(documentType + " is not a supported document type");
+    }
+
+    /*
     if (useMapping) {
       setMappingFiles(loadedFiles)
       setUseMapping(true);
@@ -109,11 +126,12 @@ export default function Home() {
       setAccountFiles(loadedFiles);
       setUseAccount(true);
     }
+    */
   }
 
-  const handleLocalLoadedFiles = (loadedFiles: File[], useMapping: boolean) => {
+  const handleLocalLoadedFiles = (loadedFiles: File[], documentType: EDocumentType) => {
     setLoadingFromLocalDrive(true);
-    handleLoadedFiles(loadedFiles, useMapping);
+    handleLoadedFiles(loadedFiles, documentType);
   }
 
   const handlePeriodSelection = (period: IAccountPeriod) => {
@@ -145,13 +163,13 @@ export default function Home() {
               <>
               <div className='section-wrapper'>
                 <p>Accounts</p>
-                <GoogleCSVUploader handleFiles={handleLoadedFiles} searchMapping={false}></GoogleCSVUploader>
+                <GoogleCSVUploader handleFiles={handleLoadedFiles} documentType={EDocumentType.ACCOUNT}></GoogleCSVUploader>
               </div>
 
               {!useAccount &&
                 <div className='section-wrapper'>
                   <p>Mappings</p>
-                  <GoogleCSVUploader handleFiles={handleLoadedFiles} searchMapping={true}></GoogleCSVUploader>
+                  <GoogleCSVUploader handleFiles={handleLoadedFiles} documentType={EDocumentType.MAPPING}></GoogleCSVUploader>
                 </div>
               }
               </>
@@ -164,7 +182,7 @@ export default function Home() {
             {useMapping &&
               <>
               <MappingExtractLoader onValuesChange={setMapping} files={mappingfiles}/>
-              <GoogleCSVUploader handleFiles={handleLoadedFiles} searchMapping={false}></GoogleCSVUploader>
+              <GoogleCSVUploader handleFiles={handleLoadedFiles} documentType={EDocumentType.ACCOUNT}></GoogleCSVUploader>
               <CSVBankExtractLoader idExtract="B" onValuesChange={handleCSVToTagLoading} files={accountFiles}/>
               </>
             }
@@ -176,9 +194,12 @@ export default function Home() {
               <p>Load from computer</p>
               {!useMapping &&
                 <>
-                <CSVUploader handleFiles={handleLocalLoadedFiles} searchMapping={false} formId="load-accounts" actionLabel='Load Accounts'></CSVUploader>
+                <CSVUploader handleFiles={handleLocalLoadedFiles} documentType={EDocumentType.ACCOUNT} formId="load-accounts" actionLabel='Load Accounts'></CSVUploader>
+                {useAccount &&
+                  <CSVUploader handleFiles={handleLocalLoadedFiles} documentType={EDocumentType.BUDGET} formId="load-budget" actionLabel='Load Budgets'></CSVUploader>
+                }
                 {!useAccount &&
-                  <CSVUploader handleFiles={handleLocalLoadedFiles} searchMapping={true} formId="load-mapping" actionLabel='Load Mapping'></CSVUploader>
+                  <CSVUploader handleFiles={handleLocalLoadedFiles} documentType={EDocumentType.MAPPING} formId="load-mapping" actionLabel='Load Mapping'></CSVUploader>
                 }
                 </>
               }
@@ -190,7 +211,7 @@ export default function Home() {
               {useMapping &&
                 <>
                 <MappingExtractLoader onValuesChange={setMapping} files={mappingfiles}/>
-                <CSVUploader handleFiles={handleLoadedFiles} searchMapping={false} formId="load-accounts" actionLabel='Load accounts to tag'></CSVUploader>
+                <CSVUploader handleFiles={handleLoadedFiles} documentType={EDocumentType.ACCOUNT} formId="load-accounts" actionLabel='Load accounts to tag'></CSVUploader>
                 <CSVBankExtractLoader idExtract="D" onValuesChange={handleCSVToTagLoading} files={accountFiles}/>
                 </>
               }
@@ -220,7 +241,7 @@ export default function Home() {
               <button id={"btn-display-expenses"} name={"btn-display-expenses"} className={selectedMode === "expenses" ? "btn-link-selected " : "btn-link "} onClick={() => {setSelectedMode("expenses")}}>
                   Display Expenses
               </button>
-              {!selectedPeriod["isAggregated"] &&
+              {!selectedPeriod["isAggregated"] && useBudget &&
                 <button id={"btn-display-budget"} name={"btn-display-budget"} className={selectedMode === "budget" ? "btn-link-selected " : "btn-link "} onClick={() => {setSelectedMode("budget")}}>
                     Display Budget
                 </button>

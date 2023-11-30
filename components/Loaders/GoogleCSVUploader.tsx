@@ -1,14 +1,15 @@
 import { useCallback, useEffect, useState } from 'react';
 import { AccountFilesSelector } from '../Components/AccountFilesSelector';
+import { EDocumentType } from '../Data/Bank';
 
 export interface InputRangeProps {
     //listedFiles: {id: string, name: string}[];
-    searchMapping: boolean;
-    handleFiles: (files: File[], useMapping: boolean) => void;
+    documentType: EDocumentType;
+    handleFiles: (files: File[], documentType: EDocumentType) => void;
 }
 
 export function GoogleCSVUploader({
-    searchMapping,
+    documentType,
     handleFiles} : InputRangeProps) {
 
     const [listedFiles, setListedFiles] = useState<{id: string, name: string}[]>([]);
@@ -54,7 +55,7 @@ export function GoogleCSVUploader({
             'includeItemsFromAllDrives': true,
             'supportsAllDrives': true,
             'orderBy': 'name',
-            'q': searchMapping ? "'" + folderId + "' in parents and mimeType='text/csv' and name contains 'mapping'" : "'" + folderId + "' in parents and mimeType='text/csv' and not name contains 'mapping'",
+            'q': documentType === EDocumentType.MAPPING ? "'" + folderId + "' in parents and mimeType='text/csv' and name contains 'mapping'" : "'" + folderId + "' in parents and mimeType='text/csv' and not name contains 'mapping'",
             'fields': 'files(id, name)'
             });
         } catch (err) {
@@ -67,7 +68,7 @@ export function GoogleCSVUploader({
             return;
         }
         setListedFiles(files);
-    }, [searchMapping]);
+    }, [documentType]);
 
     const getCSVFileContent = async (file: {id: string, name: string}) => {
         console.log("Get content for id " + file.id + ", name: " + file.name);
@@ -106,7 +107,7 @@ export function GoogleCSVUploader({
         }
 
         console.log("All files have been loaded");
-        handleFiles(files, searchMapping);
+        handleFiles(files, documentType);
     };
 
     useEffect(() => {
@@ -116,6 +117,6 @@ export function GoogleCSVUploader({
     }, [listFilesInFolder])
 
     return (
-        <AccountFilesSelector formId={searchMapping ? "load-mapping" : "load-account"}files={listedFiles} handleSelection={handleSelection}></AccountFilesSelector>
+        <AccountFilesSelector formId={documentType === EDocumentType.MAPPING ? "load-mapping" : "load-account"}files={listedFiles} handleSelection={handleSelection}></AccountFilesSelector>
     )
 }

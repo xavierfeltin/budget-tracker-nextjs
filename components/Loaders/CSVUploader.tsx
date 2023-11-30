@@ -1,15 +1,16 @@
 import { useRef } from 'react';
 import './CSVUploader.css';
+import { EDocumentType } from '../Data/Bank';
 
 export interface InputRangeProps {
-    searchMapping: boolean;
+    documentType: EDocumentType;
     formId: string;
     actionLabel: string;
-    handleFiles: (files: File[], useMapping: boolean) => void;
+    handleFiles: (files: File[], documentType: EDocumentType) => void;
 }
 
 export function CSVUploader({
-    searchMapping,
+    documentType,
     formId,
     actionLabel,
     handleFiles} : InputRangeProps) {
@@ -28,7 +29,7 @@ export function CSVUploader({
             }
         }
         console.log("CSV Uploaded nb files: " + files.length);
-        handleFiles(files, searchMapping);
+        handleFiles(files, documentType);
     };
 
     return (
