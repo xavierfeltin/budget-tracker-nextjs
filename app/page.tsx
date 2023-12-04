@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { CSVBankExtractLoader } from '../components/Loaders/CSVBankExtractLoader';
+import { CSVBudgetExtractLoader } from '../components/Loaders/CSVBudgetExtractLoader';
 import { EDocumentType, IAccountPeriod, TBudget, TMapping, getWholePeriod, tagPeriods } from "../components/Data/Bank";
 import { Balance } from '../components/Components/Balance';
 import { TagList } from '../components/Components/TagList';
@@ -27,6 +28,7 @@ export default function Home() {
 
   const [accountFiles, setAccountFiles] = useState<File[]>([]);
   const [mappingfiles, setMappingFiles] = useState<File[]>([]);
+  const [budgetFiles, setBudgetFiles] = useState<File[]>([]);
 
   const [useAccount, setUseAccount] = useState<boolean>(false);
   const [useMapping, setUseMapping] = useState<boolean>(false);
@@ -101,6 +103,8 @@ export default function Home() {
         setUseMapping(true);
         break;
       case EDocumentType.BUDGET:
+        setBudgetFiles(loadedFiles);
+        /*
         setBudgets({
           "Loisir": 100,
           "Nourriture": 650,
@@ -112,21 +116,11 @@ export default function Home() {
           "Supermarché": 400,
           "Sommelier": 30
         });
+        */
         setUseBudget(true);
         break;
       default: console.warn(documentType + " is not a supported document type");
     }
-
-    /*
-    if (useMapping) {
-      setMappingFiles(loadedFiles)
-      setUseMapping(true);
-    }
-    else {
-      setAccountFiles(loadedFiles);
-      setUseAccount(true);
-    }
-    */
   }
 
   const handleLocalLoadedFiles = (loadedFiles: File[], documentType: EDocumentType) => {
@@ -205,7 +199,13 @@ export default function Home() {
               }
 
               {useAccount && !useMapping &&
-               <CSVBankExtractLoader idExtract="C" onValuesChange={handleCSVLoading} files={accountFiles}/>
+                <>
+                <CSVBankExtractLoader idExtract="C" onValuesChange={handleCSVLoading} files={accountFiles}/>
+
+                {useBudget &&
+                  <CSVBudgetExtractLoader onValuesChange={setBudgets} files={budgetFiles}/>
+                }
+               </>
               }
 
               {useMapping &&

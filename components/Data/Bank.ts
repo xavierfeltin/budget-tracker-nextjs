@@ -39,6 +39,10 @@ export interface ITagBudget {
     lines: IAccountLine[];
 }
 
+export interface IBudgetLine {
+    tag: string;
+    amount: number;
+}
 
 export enum EDocumentType {
     ACCOUNT = "ACCOUNT",
