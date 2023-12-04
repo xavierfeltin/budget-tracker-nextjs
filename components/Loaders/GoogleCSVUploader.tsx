@@ -8,6 +8,32 @@ export interface InputRangeProps {
     handleFiles: (files: File[], documentType: EDocumentType) => void;
 }
 
+const getFormIdFromDocumentType = (type: EDocumentType): string => {
+    switch (type) {
+        case EDocumentType.ACCOUNT:
+            return "load-account";
+        case EDocumentType.MAPPING:
+            return "load-mapping";
+        case EDocumentType.BUDGET:
+            return "load-budget";
+        default:
+            return "";
+    }
+}
+
+const getQueryFilterFromDocumentType = (folderId: string, type: EDocumentType): string => {
+    switch (type) {
+        case EDocumentType.ACCOUNT:
+            return "'" + folderId + "' in parents and mimeType='text/csv' and not name contains 'mapping'";
+        case EDocumentType.MAPPING:
+            return "'" + folderId + "' in parents and mimeType='text/csv' and name contains 'mapping'";
+        case EDocumentType.BUDGET:
+            return "'" + folderId + "' in parents and mimeType='text/csv' and name contains 'budget'";
+        default:
+            return "";
+    }
+}
+
 export function GoogleCSVUploader({
     documentType,
     handleFiles} : InputRangeProps) {
@@ -55,7 +81,7 @@ export function GoogleCSVUploader({
             'includeItemsFromAllDrives': true,
             'supportsAllDrives': true,
             'orderBy': 'name',
-            'q': documentType === EDocumentType.MAPPING ? "'" + folderId + "' in parents and mimeType='text/csv' and name contains 'mapping'" : "'" + folderId + "' in parents and mimeType='text/csv' and not name contains 'mapping'",
+            'q': getQueryFilterFromDocumentType(folderId, documentType),
             'fields': 'files(id, name)'
             });
         } catch (err) {
@@ -117,6 +143,6 @@ export function GoogleCSVUploader({
     }, [listFilesInFolder])
 
     return (
-        <AccountFilesSelector formId={documentType === EDocumentType.MAPPING ? "load-mapping" : "load-account"}files={listedFiles} handleSelection={handleSelection}></AccountFilesSelector>
+        <AccountFilesSelector formId={getFormIdFromDocumentType(documentType)} files={listedFiles} handleSelection={handleSelection}></AccountFilesSelector>
     )
 }

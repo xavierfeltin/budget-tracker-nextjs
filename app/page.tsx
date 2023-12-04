@@ -104,19 +104,6 @@ export default function Home() {
         break;
       case EDocumentType.BUDGET:
         setBudgetFiles(loadedFiles);
-        /*
-        setBudgets({
-          "Loisir": 100,
-          "Nourriture": 650,
-          "Vetements": 50,
-          "Sortie": 200,
-          "Café": 50,
-          "Restaurant": 150,
-          "Marché": 150,
-          "Supermarché": 400,
-          "Sommelier": 30
-        });
-        */
         setUseBudget(true);
         break;
       default: console.warn(documentType + " is not a supported document type");
@@ -158,6 +145,12 @@ export default function Home() {
               <div className='section-wrapper'>
                 <p>Accounts</p>
                 <GoogleCSVUploader handleFiles={handleLoadedFiles} documentType={EDocumentType.ACCOUNT}></GoogleCSVUploader>
+                {useAccount &&
+                  <>
+                  <p>Budget</p>
+                  <GoogleCSVUploader handleFiles={handleLoadedFiles} documentType={EDocumentType.BUDGET}></GoogleCSVUploader>
+                  </>
+                }
               </div>
 
               {!useAccount &&
@@ -170,7 +163,13 @@ export default function Home() {
             }
 
             {useAccount && !useMapping &&
+              <>
               <CSVBankExtractLoader idExtract="A" onValuesChange={handleCSVLoading} files={accountFiles}/>
+
+              {useBudget &&
+                <CSVBudgetExtractLoader onValuesChange={setBudgets} files={budgetFiles}/>
+              }
+              </>
             }
 
             {useMapping &&
