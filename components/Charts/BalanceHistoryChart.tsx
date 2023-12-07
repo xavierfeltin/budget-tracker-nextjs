@@ -21,6 +21,8 @@ export interface IChartDataset {
     label: string;
     yAxisID?: string;
     data: number[];
+    pointRadius?: number;
+    borderColor?: string;
     backgroundColor: string;
     datalabels: any;
 }

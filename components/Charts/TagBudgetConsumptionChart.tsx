@@ -11,7 +11,7 @@ import {
   } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 import { CHART_COLORS } from "./ColorBank";
-import { IAccountLine, TBudget } from "../Data/Bank";
+import { IAccountLine } from "../Data/Bank";
 
 export interface InputRangeProps {
     accountLines: IAccountLine[];
@@ -70,27 +70,29 @@ export function TagBudgetConsumptionChart({
         const budgetConsumption: number[] = [];
         let consumed = 0;
 
-        if (accountLines.length === 1) {
-            dateLabels.push(accountLines[0].date.toLocaleDateString("fr-FR"));
-            consumed = accountLines[0].debit || 0;
+        const taggedLines = tag === "" ? accountLines : accountLines.filter((line) => line.tags.indexOf(tag) !== -1);
+
+        if (taggedLines.length === 1) {
+            dateLabels.push(taggedLines[0].date.toLocaleDateString("fr-FR"));
+            consumed = taggedLines[0].debit || 0;
             budgetConsumption.push(consumed);
         }
-        else if (accountLines.length > 1) {
-            let currentDate = accountLines[0].date;
-            let currentConsumption = accountLines[0].debit || 0;
+        else if (taggedLines.length > 1) {
+            let currentDate = taggedLines[0].date;
+            let currentConsumption = taggedLines[0].debit || 0;
 
-            for(let i = 1; i < accountLines.length; i++)
+            for(let i = 1; i < taggedLines.length; i++)
             {
-                if (accountLines[i].date.getTime() !== currentDate.getTime()) {
+                if (taggedLines[i].date.getTime() !== currentDate.getTime()) {
                     dateLabels.push(currentDate.toLocaleDateString("fr-FR"));
                     consumed += currentConsumption;
                     budgetConsumption.push(consumed);
 
-                    currentConsumption = accountLines[i].debit || 0;
-                    currentDate = accountLines[i].date;
+                    currentConsumption = taggedLines[i].debit || 0;
+                    currentDate = taggedLines[i].date;
                 }
                 else {
-                    currentConsumption += accountLines[i].debit || 0;
+                    currentConsumption += taggedLines[i].debit || 0;
                 }
             }
 
@@ -113,20 +115,22 @@ export function TagBudgetConsumptionChart({
         };
         datasets.push(dataset);
 
-        const budgetLimit: number[] = Array(dateLabels.length).fill(allowedAmount);
-        dataset = {
-            label: "Budget limit",
-            yAxisID: 'y',
-            data: budgetLimit,
-            pointRadius: 0,
-            borderColor: CHART_COLORS[1],
-            backgroundColor: CHART_COLORS[1],
-            datalabels: {
-                anchor: 'center',
-                align: 'bottom'
-            }
-        };
-        datasets.push(dataset);
+        if (allowedAmount > 0) {
+            const budgetLimit: number[] = Array(dateLabels.length).fill(allowedAmount);
+            dataset = {
+                label: "Budget limit",
+                yAxisID: 'y',
+                data: budgetLimit,
+                pointRadius: 0,
+                borderColor: CHART_COLORS[1],
+                backgroundColor: CHART_COLORS[1],
+                datalabels: {
+                    anchor: 'center',
+                    align: 'bottom'
+                }
+            };
+            datasets.push(dataset);
+        }
 
         let dataToDisplay: IChartData = {
             labels: dateLabels,
@@ -134,6 +138,13 @@ export function TagBudgetConsumptionChart({
         };
 
         setChartData(dataToDisplay);
+
+        const chartTitle = ["Budget consumption for " + tag];
+        let titleColor = "";
+        if (allowedAmount > 0) {
+            chartTitle.push(budgetConsumption[budgetConsumption.length-1].toFixed(2) + " / " + allowedAmount.toFixed(2));
+            titleColor = budgetConsumption[budgetConsumption.length-1] <= allowedAmount ? "#039487" : "#cc0000";
+        }
 
         let options: IChartOption = {
             responsive: true,
@@ -162,8 +173,8 @@ export function TagBudgetConsumptionChart({
                 },
                 title: {
                     display: true,
-                    text: ["Budget consumption for " + tag, budgetConsumption[budgetConsumption.length-1].toFixed(2) + " / " + allowedAmount.toFixed(2)],
-                    color: budgetConsumption[budgetConsumption.length-1] <= allowedAmount ? "#039487" : "#cc0000"
+                    text: chartTitle,
+                    color: titleColor
                 },
                 datalabels: {
                     display: false

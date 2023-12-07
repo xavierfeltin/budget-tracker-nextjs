@@ -20,6 +20,7 @@ import { GoogleLogin } from '@/components/Components/GoogleLogin';
 import { TagMonthlyTendencyChart } from '@/components/Charts/TagMonthlyTendencyChart';
 import { TagByMonthChart } from '@/components/Charts/TagByMonthChart';
 import { Budget } from '@/components/Components/Budget';
+import { TagBudgetConsumptionChart } from '@/components/Charts/TagBudgetConsumptionChart';
 
 export default function Home() {
 
@@ -240,11 +241,6 @@ export default function Home() {
               <button id={"btn-display-expenses"} name={"btn-display-expenses"} className={selectedMode === "expenses" ? "btn-link-selected " : "btn-link "} onClick={() => {setSelectedMode("expenses")}}>
                   Display Expenses
               </button>
-              {!selectedPeriod["isAggregated"] && useBudget &&
-                <button id={"btn-display-budget"} name={"btn-display-budget"} className={selectedMode === "budget" ? "btn-link-selected " : "btn-link "} onClick={() => {setSelectedMode("budget")}}>
-                    Display Budget
-                </button>
-              }
               <button id={"btn-display-lines"} name={"btn-display-lines"} className={selectedMode === "lines" ? "btn-link-selected " : "btn-link "} onClick={() => {setSelectedMode("lines")}}>
                   Display Account lines
               </button>
@@ -265,15 +261,17 @@ export default function Home() {
                 {selectedTag !== "" &&
                   <div>
                     {selectedPeriod.isAggregated &&
-                      <TagMonthlyTendencyChart accountLines={selectedPeriod.lines} tag={selectedTag}/>
+                      <TagMonthlyTendencyChart accountLines={selectedPeriod.lines} tag={selectedTag} allowedAmount={Object.keys(budgets).length === 0 ? 0 : budgets[selectedTag]}/>
                     }
                     <div className="chart-container">
+                    {!selectedPeriod.isAggregated &&
+                      <TagBudgetConsumptionChart allowedAmount={Object.keys(budgets).length === 0 ? 0 : budgets[selectedTag]} accountLines={selectedPeriod.lines} tag={selectedTag}></TagBudgetConsumptionChart>
+                    }
                     <TagByMonthChart accountLines={selectedPeriod.lines} tag={selectedTag}/>
                     <TagRepartitionChart accountLines={selectedPeriod.lines} tag={selectedTag}/>
                     </div>
 
                     <TagHistoryChart accountLines={selectedPeriod.lines} tag={selectedTag}/>
-
                   </div>
                 }
               </div>
@@ -281,10 +279,6 @@ export default function Home() {
 
             {selectedMode === "lines" &&
               <Lines accountLines={selectedPeriod.lines} tag={selectedTag}/>
-            }
-
-            {selectedMode === "budget" &&
-               <Budget accountLines={selectedPeriod.lines} budgets={budgets} tag={selectedTag}></Budget>
             }
           </div>
         }

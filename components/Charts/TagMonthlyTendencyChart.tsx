@@ -17,6 +17,7 @@ import { Context } from "chartjs-plugin-datalabels";
 
 export interface InputRangeProps {
     accountLines: IAccountLine[];
+    allowedAmount: number;
     tag: string;
 }
 
@@ -24,6 +25,8 @@ export interface IChartDataset {
     label: string;
     yAxisID?: string;
     data: number[];
+    pointRadius?: number;
+    borderColor?: string;
     backgroundColor: string;
     datalabels?: any;
 }
@@ -55,6 +58,7 @@ ChartJS.register(
 
 export function TagMonthlyTendencyChart({
     accountLines,
+    allowedAmount,
     tag,
     }: InputRangeProps): JSX.Element {
 
@@ -98,10 +102,26 @@ export function TagMonthlyTendencyChart({
             label: tag || "Tous",
             yAxisID: 'y',
             data: tagHistoryDebit,
-            backgroundColor: CHART_COLORS[0],
-
+            backgroundColor: CHART_COLORS[0]
         };
         datasets.push(dataset);
+
+        if (allowedAmount > 0) {
+            const budgetLimit: number[] = Array(dateLabels.length).fill(allowedAmount);
+            dataset = {
+                label: "Budget limit",
+                yAxisID: 'y',
+                data: budgetLimit,
+                pointRadius: 0,
+                borderColor: CHART_COLORS[1],
+                backgroundColor: CHART_COLORS[1],
+                datalabels: {
+                    anchor: 'center',
+                    align: 'bottom'
+                }
+            };
+            datasets.push(dataset);
+        }
 
         let dataToDisplay: IChartData = {
             labels: dateLabels,
@@ -109,6 +129,11 @@ export function TagMonthlyTendencyChart({
         };
 
         setChartData(dataToDisplay);
+
+        let title = ["Debit monthly history of " + (tag || "Tous")];
+        if (allowedAmount > 0) {
+            title.push("Allowed budget " + allowedAmount.toFixed(2));
+        }
 
         let options: IChartOption = {
             responsive: true,
@@ -140,7 +165,7 @@ export function TagMonthlyTendencyChart({
                 },
                 title: {
                     display: true,
-                    text: "Debit monthly history of " + (tag || "Tous"),
+                    text: title,
                     padding: {
                         top: 5,
                         bottom: 25
@@ -152,7 +177,7 @@ export function TagMonthlyTendencyChart({
                     color: 'black',
                     display: (context: Context): boolean => {
                         const val: number = context.dataset.data[context.dataIndex] as number;
-                        return val > 0;
+                        return val > 0 && context.datasetIndex === 0;
                     },
                     formatter: (value: number, context: Context): string => {
                         return Math.round(value).toString();
@@ -167,7 +192,7 @@ export function TagMonthlyTendencyChart({
         }
         setChartOption(options);
 
-   }, [accountLines, tag]);
+   }, [accountLines, allowedAmount, tag]);
 
     return (
         <div className="time-chart-wrapper">
