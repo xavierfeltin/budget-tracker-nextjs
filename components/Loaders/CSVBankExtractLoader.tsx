@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { IAccountLine, IAccountPeriod } from "../Data/Bank";
+import { UtilMath } from "../Data/UtilMath";
 
 export interface InputRangeProps {
     files: File[];
@@ -34,8 +35,14 @@ const csvFileToArray = (filename: string, csv: string) => {
 
         // Expecting dd/mm/yyyy
         const dateElements: number[] = values[headersIdx[0]].split("/").map((elem) => Number.parseFloat(elem));
+
+        const date = new Date(dateElements[2], dateElements[1] - 1, dateElements[0]);
+        const maxDaysOfMonth = new Date(dateElements[2], dateElements[1], 0).getDate();
+        const pctInMonth = Math.round(UtilMath.map(dateElements[0], 1, maxDaysOfMonth, 1, 100));
+
         const dataRow: IAccountLine = {
-          date: new Date(dateElements[2], dateElements[1] - 1, dateElements[0]),
+          date: date,
+          pctInMonth: pctInMonth,
           debit: values[headersIdx[1]] ? Number.parseFloat(values[headersIdx[1]].replace(',', '.')) * -1 : undefined, // only positive values
           credit: values[headersIdx[2]] ? Number.parseFloat(values[headersIdx[2]].replace(',', '.')) : undefined,
           label: values[headersIdx[3]],
@@ -49,7 +56,7 @@ const csvFileToArray = (filename: string, csv: string) => {
     const data: IAccountPeriod = {
         begin: new Date(lines[0].date.getFullYear(), lines[0].date.getMonth(), 1),
         end: new Date(lines[0].date.getFullYear(), lines[0].date.getMonth() + 1, 0),
-        lines: lines,
+        lines: lines.sort((a, b) => a.date.getTime() - b.date.getTime()),
         isAggregated: false
     };
     return data;
@@ -78,7 +85,7 @@ export function CSVBankExtractLoader({
                     setData(prev => {
                         if (prev.findIndex((val) => val.begin.toLocaleDateString() === data.begin.toLocaleDateString() && val.end.toLocaleDateString() === data.end.toLocaleDateString()) === -1)
                         {
-                            return [...prev, data].sort((a, b) => a.end > b.end ? 1 : -1)
+                            return [...prev, data].sort((a, b) => a.end.getTime() - b.end.getTime())
                         }
                         else {
                             return [...prev];

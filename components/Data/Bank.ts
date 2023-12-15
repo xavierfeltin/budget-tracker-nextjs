@@ -1,5 +1,6 @@
 export interface IAccountLine {
     date: Date;
+    pctInMonth: number; // map 1-28/29/30/31 month to 1-100%
     debit: number | undefined;
     credit: number | undefined;
     label: string;
@@ -186,7 +187,6 @@ export function getWholePeriod(accounts: IAccountPeriod[]): IAccountPeriod {
 
       wholePeriod.lines.sort((a: IAccountLine, b: IAccountLine) => {return a.date > b.date ? 1 : -1;});
     return wholePeriod;
-
 }
 
 export function isPaymentLabel(label: string): boolean {
@@ -267,4 +267,98 @@ export function tagPeriods(periods: IAccountPeriod[], mapping: TMapping): IAccou
         }
     }
     return taggedPeriods;
+}
+
+export interface IBoxPlot {
+    pctInMonth: number;
+    minimum: number;
+    firstQuartile: number;
+    mean: number;
+    mediane: number;
+    thirdQuartile: number;
+    maximum: number
+}
+
+export function getBoxPlotsFromLines(allAccountLines: IAccountLine[]): IBoxPlot[] {
+    const step = 5;
+    const boxPlotByStep: IBoxPlot[] = [];
+
+    let values = allAccountLines.filter((line) => line.pctInMonth <= 1).map((line) => line.balance).sort((a,b) => a-b);
+    const boxPlot = extractBoxPlotFromData(values);
+    boxPlot.pctInMonth = 1;
+    boxPlotByStep.push(boxPlot);
+
+    for (let i = 5; i <= 100; i+=step) {
+        let values = allAccountLines.filter((line) => line.pctInMonth > (i-step) && line.pctInMonth <= i).map((line) => line.balance).sort((a,b) => a-b);
+        const boxPlot = extractBoxPlotFromData(values);
+        boxPlot.pctInMonth = i;
+        boxPlotByStep.push(boxPlot);
+    }
+    return boxPlotByStep;
+}
+
+export function extractBoxPlotFromData(data: number[]): IBoxPlot {
+
+    if (data.length === 0) {
+        return {
+            pctInMonth: NaN,
+            firstQuartile: NaN,
+            thirdQuartile: NaN,
+            mediane: NaN,
+            mean: NaN,
+            minimum: NaN,
+            maximum: NaN
+        };
+    }
+
+    const firstQuartileIdx = Math.max(0, ((data.length + 3) / 4) -1);
+    const thirdQuartileIdx = Math.max(0, ((3 * data.length + 1) / 4) -1);
+
+    let mediane: number;
+    if (data.length % 2 === 0 && data.length > 2) {
+        const lowerIdx = ((data.length) / 2) - 2;
+        const upperIdx = ((data.length) / 2) - 1;
+        mediane = (data[lowerIdx] + data[upperIdx]) / 2;
+    }
+    else {
+       const idx = Math.max(0, ((data.length + 1) / 2) -1);
+       mediane = data[idx];
+    }
+
+    let mean: number = 0;
+    mean = data.reduce((a, b) => a +b);
+    mean = mean / data.length;
+
+    return {
+        pctInMonth: NaN,
+        firstQuartile: computeQuartileValue(firstQuartileIdx, data),
+        thirdQuartile: computeQuartileValue(thirdQuartileIdx, data),
+        mediane: mediane,
+        mean: mean,
+        minimum: data[0],
+        maximum: data[data.length - 1]
+    };
+}
+
+export function computeQuartileValue(quartileIdx: number, data: number[]): number {
+    if (Number.isInteger(quartileIdx)) {
+        return data[quartileIdx];
+    }
+
+    const lowerIdx = Math.ceil(quartileIdx);
+    const upperIdx = Math.floor(quartileIdx);
+
+    let coeff1 = 1;
+    let coeff2 = 1;
+
+    if (quartileIdx - lowerIdx === 0.25) {
+        coeff1 = 3;
+    }
+    else if (quartileIdx - lowerIdx === 0.75) {
+        coeff2 = 3;
+    }
+    // else {  (quartileIdx - lowerIdx === 0.5) {
+        //coeff1 = 1, coeff2 = 1
+
+    return  (data[lowerIdx] * coeff1 + data[upperIdx] * coeff2) / (coeff1 + coeff2);
 }

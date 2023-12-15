@@ -19,8 +19,8 @@ import { CSVUploader } from '@/components/Loaders/CSVUploader';
 import { GoogleLogin } from '@/components/Components/GoogleLogin';
 import { TagMonthlyTendencyChart } from '@/components/Charts/TagMonthlyTendencyChart';
 import { TagByMonthChart } from '@/components/Charts/TagByMonthChart';
-import { Budget } from '@/components/Components/Budget';
 import { TagBudgetConsumptionChart } from '@/components/Charts/TagBudgetConsumptionChart';
+import { QuartileHistoryChart } from '@/components/Charts/QuartileHistoryChart';
 
 export default function Home() {
 
@@ -250,7 +250,12 @@ export default function Home() {
               <div>
                 {selectedTag === "" &&
                   <div>
-                    <BalanceHistoryChart accountLines={selectedPeriod.lines}/>
+                    {selectedPeriod.isAggregated &&
+                      <BalanceHistoryChart accountLines={selectedPeriod.lines}/>
+                    }
+                    {!selectedPeriod.isAggregated &&
+                      <QuartileHistoryChart accountLines={selectedPeriod.lines} allAccountLines={periods.map((period) => period.lines).flat()}></QuartileHistoryChart>
+                    }
                     <div className="chart-container">
                     <TagByMonthChart accountLines={selectedPeriod.lines} tag={selectedTag}/>
                     <TagRepartitionChart accountLines={selectedPeriod.lines} tag={selectedTag}/>
