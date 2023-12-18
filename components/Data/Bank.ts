@@ -280,20 +280,26 @@ export interface IBoxPlot {
 }
 
 export function getBoxPlotsFromLines(allAccountLines: IAccountLine[]): IBoxPlot[] {
-    const step = 5;
+    const step = 10;
     const boxPlotByStep: IBoxPlot[] = [];
 
-    let values = allAccountLines.filter((line) => line.pctInMonth <= 1).map((line) => line.balance).sort((a,b) => a-b);
-    const boxPlot = extractBoxPlotFromData(values);
+    let values = allAccountLines.filter((line) => line.pctInMonth < 5).map((line) => line.balance).sort((a,b) => a-b);
+    let boxPlot = extractBoxPlotFromData(values);
     boxPlot.pctInMonth = 1;
     boxPlotByStep.push(boxPlot);
 
-    for (let i = 5; i <= 100; i+=step) {
-        let values = allAccountLines.filter((line) => line.pctInMonth > (i-step) && line.pctInMonth <= i).map((line) => line.balance).sort((a,b) => a-b);
+    for (let i = 5; i <= 95; i+=step) {
+        let values = allAccountLines.filter((line) => line.pctInMonth >= (i-5) && line.pctInMonth < (i+5)).map((line) => line.balance).sort((a,b) => a-b);
         const boxPlot = extractBoxPlotFromData(values);
         boxPlot.pctInMonth = i;
         boxPlotByStep.push(boxPlot);
     }
+
+    values = allAccountLines.filter((line) => line.pctInMonth >= 95).map((line) => line.balance).sort((a,b) => a-b);
+    boxPlot = extractBoxPlotFromData(values);
+    boxPlot.pctInMonth = 100;
+    boxPlotByStep.push(boxPlot);
+
     return boxPlotByStep;
 }
 
