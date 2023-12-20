@@ -1,3 +1,5 @@
+import { start } from "repl";
+
 export interface IAccountLine {
     date: Date;
     pctInMonth: number; // map 1-28/29/30/31 month to 1-100%
@@ -99,10 +101,36 @@ export function extractTags(lines: IAccountLine[]): string[] {
     return tags.sort();
 }
 
-export function extractTagsWithCount(lines: IAccountLine[]): ITag[] {
+export function extractTagsWithCount(lines: IAccountLine[], startingTag: string | undefined): ITag[] {
     let tags: ITag[] = [];
+
+    debugger;
     for (let i = 0; i < lines.length; i++) {
-        for (let j = 0; j < lines[i].tags.length; j++) {
+        let startIdx = 0;
+        let endIdx = lines[i].tags.length;
+
+        if (startingTag) {
+            // Consider only the next after the startingTag
+            const idx = lines[i].tags.findIndex((tag) => tag === startingTag);
+            if (idx === (lines[i].tags.length - 1)) {
+                //Ignore
+                continue;
+                // If startingTag is the last one in the tag list, consider the first tag of the list instead
+                //startIdx = 0;
+                //endIdx = 1;
+            }
+
+            startIdx = idx + 1;
+            endIdx = idx + 2;
+            console.log("starting tag idx " + startIdx);
+        }
+
+        for (let j = startIdx; j < endIdx; j++) {
+
+            if(lines[i].tags[j] === startingTag) {
+                debugger;
+            }
+
             const tagIdx = tags.findIndex((tag) => tag.tag === lines[i].tags[j]);
             if (tagIdx === -1) {
                 tags.push({tag: lines[i].tags[j], count: 1, frequency: 1/lines.length});
