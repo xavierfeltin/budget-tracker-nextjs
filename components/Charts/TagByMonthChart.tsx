@@ -1,7 +1,7 @@
 import './TagByMonthChart.css';
 
 import { useEffect, useState } from "react";
-import { IAccountLine, TagLine, aggregateByDate, aggregateByTag, aggregateByTags } from "../Data/Bank";
+import { IAccountLine, aggregateByDate, aggregateByTags } from "../Data/Bank";
 import { TagMonthBarChart } from "./TagMonthBarChart";
 
 export interface InputRangeProps {
@@ -38,7 +38,18 @@ export function TagByMonthChart({
         const processedTags: string[] = [];
         const dataByTag: {tag: string, data: number[]}[] = []
         for (let i = 0; i < tags.length; i++) {
-            const subTaggedLines = taggedLines.filter((line) => line.tags.indexOf(tags[i]) !== -1 && !line.tags.some(t => processedTags.includes(t)));
+            let subTaggedLines: IAccountLine[] = [];
+            if (tag === "") {
+                // Search only the first level of tags
+                subTaggedLines = taggedLines.filter((line) => line.tags.indexOf(tags[i]) === 0);
+            }
+            else {
+                // Search any lines containing the tag but no other tags already processed
+                subTaggedLines = taggedLines.filter((line) => {
+                    const tagIdx = line.tags.indexOf(tag);
+                    return line.tags.indexOf(tags[i]) === (tagIdx + 1) //&& !line.tags.some(t => processedTags.includes(t)
+                });
+            }
             const groupSubTagByDate = aggregateByDate(subTaggedLines, true);
 
             let historyDebit = Object.keys(groupByDate).sort((a, b) => {

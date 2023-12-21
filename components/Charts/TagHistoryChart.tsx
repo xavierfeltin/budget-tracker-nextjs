@@ -71,7 +71,18 @@ export function TagHistoryChart({
 
         const processedTags: string[] = [];
         for (let i = 0; i < tags.length; i++) {
-            const subTaggedLines = taggedLines.filter((line) => line.tags.indexOf(tags[i]) !== -1 && !line.tags.some(t => processedTags.includes(t)));
+            let subTaggedLines: IAccountLine[] = [];
+            if (tag === "") {
+                // Search only the first level of tags
+                subTaggedLines = taggedLines.filter((line) => line.tags.indexOf(tags[i]) === 0);
+            }
+            else {
+                // Search any lines containing the tag but no other tags already processed
+                subTaggedLines = taggedLines.filter((line) => {
+                    const tagIdx = line.tags.indexOf(tag);
+                    return line.tags.indexOf(tags[i]) === (tagIdx + 1) //&& !line.tags.some(t => processedTags.includes(t)
+                });
+            }
             const groupSubTagByDate = aggregateByDate(subTaggedLines);
 
             let historyDebit = Object.keys(groupByDate).sort((a, b) => {
@@ -80,14 +91,6 @@ export function TagHistoryChart({
                 return dA > dB ? 1 : -1;
             }).map((date) => groupSubTagByDate[date] ? groupSubTagByDate[date].debit - groupSubTagByDate[date].credit: 0);
 
-            /*
-            let historyCredit = Object.keys(groupByDate).sort((a, b) => {
-                let dA = new Date(parseInt(a.split("/")[2]), parseInt(a.split("/")[1]) - 1, parseInt(a.split("/")[0]));
-                let dB = new Date(parseInt(b.split("/")[2]), parseInt(b.split("/")[1]) - 1, parseInt(b.split("/")[0]));
-                return dA > dB ? 1 : -1;
-            }).map((date) => groupSubTagByDate[date] ? -groupSubTagByDate[date].credit : 0);
-            */
-
             let datasetDebit: IChartDataset = {
                 label: tags[i],
                 yAxisID: 'y',
@@ -95,16 +98,6 @@ export function TagHistoryChart({
                 backgroundColor: CHART_COLORS[i%CHART_COLORS.length]
             };
             datasets.push(datasetDebit);
-
-            /*
-            let datasetCredit: IChartDataset = {
-                label: tags[i],
-                yAxisID: 'y',
-                data: historyCredit,
-                backgroundColor: CHART_COLORS[i%CHART_COLORS.length]
-            };
-            datasets.push(datasetCredit);
-            */
 
             processedTags.push(tags[i]);
         }
