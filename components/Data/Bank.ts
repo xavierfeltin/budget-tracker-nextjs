@@ -213,7 +213,7 @@ export function getWholePeriod(accounts: IAccountPeriod[]): IAccountPeriod {
             isAggregated: true}
       });
 
-      wholePeriod.lines.sort((a: IAccountLine, b: IAccountLine) => {return a.date > b.date ? 1 : -1;});
+      wholePeriod.lines.sort((a: IAccountLine, b: IAccountLine) => {return a.date.getTime() === b.date.getTime() ? 0 : (a.date.getTime() > b.date.getTime() ? 1 : -1);});
     return wholePeriod;
 }
 

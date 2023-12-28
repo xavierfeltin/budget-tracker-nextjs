@@ -83,6 +83,7 @@ export function BalanceHistoryChart({
         }
         else if (accountLines.length > 1) {
             let currentDate = accountLines[0].date;
+
             for(let i = 1; i < accountLines.length; i++)
             {
                 if (accountLines[i].date.getTime() !== currentDate.getTime()) {
@@ -90,11 +91,10 @@ export function BalanceHistoryChart({
                     history.push(accountLines[i-1].balance);
                     currentDate = accountLines[i].date;
                 }
-                else if (i === accountLines.length-1 && accountLines[i].date.getTime() === currentDate.getTime()) {
-                    dateLabels.push(currentDate.toLocaleDateString("fr-FR"));
-                    history.push(accountLines[i-1].balance);
-                }
             }
+
+            dateLabels.push(currentDate.toLocaleDateString("fr-FR"));
+            history.push(accountLines[accountLines.length - 1].balance);
         }
 
         let datasets: IChartDataset[] = [];

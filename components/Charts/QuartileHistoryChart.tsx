@@ -83,27 +83,25 @@ export function QuartileHistoryChart({
         const dataLabels: Date[] = [];
         const history: number[] = [];
 
+        debugger;
         if (accountLines.length === 1) {
             dataLabels.push(accountLines[0].date);
-            //dataLabels.push(accountLines[0].pctInMonth)
             history.push(accountLines[0].balance);
         }
         else if (accountLines.length > 1) {
             let currentDate = accountLines[0].date;
+
             for(let i = 1; i < accountLines.length; i++)
             {
                 if (accountLines[i].date.getTime() !== currentDate.getTime()) {
                     dataLabels.push(currentDate);
-                    //dataLabels.push(accountLines[i-1].pctInMonth)
                     history.push(accountLines[i-1].balance);
                     currentDate = accountLines[i].date;
                 }
-                else if (i === accountLines.length-1 && accountLines[i].date.getTime() === currentDate.getTime()) {
-                    dataLabels.push(currentDate);
-                    //dataLabels.push(accountLines[i-1].pctInMonth)
-                    history.push(accountLines[i-1].balance);
-                }
             }
+
+            dataLabels.push(currentDate);
+            history.push(accountLines[accountLines.length - 1].balance);
         }
 
         const date = accountLines[accountLines.length-1].date;

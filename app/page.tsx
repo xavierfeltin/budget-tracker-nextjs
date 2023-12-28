@@ -54,6 +54,7 @@ export default function Home() {
   const handleCSVLoading = useCallback((data: IAccountPeriod[]): void => {
     console.log("loaded : " + data.length);
     if (data.length > 0) {
+        debugger;
         const wholePeriod = getWholePeriod(data);
         setPeriods([wholePeriod, ...data]);
         setSelectedPeriod(wholePeriod);
