@@ -1,0 +1,23 @@
+.main {
+    min-height: 200vh;
+    padding: 6rem 1rem 1rem;
+}
+
+@media screen and (max-width:767px) {
+    .month-chart-wrapper {
+        border: 1px solid lightgray;
+        width: 100%;
+        height: 50vh;
+    }
+
+    .pie-chart-wrapper {
+        border: 1px solid lightgray;
+        width: 100%;
+        height: 50vh;
+    }
+
+    .time-chart-wrapper {
+        border: 1px solid lightgray;
+        width: 100%;
+    }
+}

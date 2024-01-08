@@ -83,7 +83,6 @@ export function QuartileHistoryChart({
         const dataLabels: Date[] = [];
         const history: number[] = [];
 
-        debugger;
         if (accountLines.length === 1) {
             dataLabels.push(accountLines[0].date);
             history.push(accountLines[0].balance);

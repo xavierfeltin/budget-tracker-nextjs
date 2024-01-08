@@ -15,6 +15,7 @@ export function TagList({
     const [tagsWithCount, setTagsWithCount] = useState<ITag[]>([])
     const [subTagsWithCount, setSubTagsWithCount] = useState<ITag[]>([])
     const [selectedTag, setSelectedTag] = useState<string>("");
+    const [breadCrumbs, setBreadCrumbs] = useState<string[]>(["Tous"]);
 
     useEffect(() => {
         const listWithCount = extractTagsWithCount(account.lines, undefined)
@@ -36,25 +37,48 @@ export function TagList({
 
     return (
         <div>
-            <h1> Tags </h1>
-
-            {selectedTag !== "" &&
+            <p>
+            {breadCrumbs.map((tag, idx) => (
                 <>
-                <p>{selectedTag} sub tags</p>
+                <button key={"btn-breadcrumb-" + tag} id={"btn-breadcrumb-" + tag} name={"btn-breadcrumb-" + tag} className={"btn-link "}
+                    onClick={() => {
+                        const selectedCrumb = breadCrumbs[idx];
+                        const mappedTag = selectedCrumb === "Tous" ? "" : selectedCrumb;
+                        setSelectedTag(selectedCrumb);
+                        setBreadCrumbs((old) => old.slice(0, old.indexOf(selectedCrumb) + 1));
+                        onTagSelect(mappedTag);
+                    }}>
+                    {tag}
+                </button>
+                {idx < (breadCrumbs.length - 1) &&
+                    <span> {">"} </span>
+                }
+                </>
+            ))}
+            </p>
+
+            <p>Select tags</p>
+            {breadCrumbs.length > 1 &&
+                <>
                 {subTagsWithCount.map((tag, idx) => (
-                    <button key={"btn-subtag-" + tag.tag} id={"btn-subtag-" + tag.tag} name={"btn-subtag-" + tag.tag} className={"btn-link "} onClick={() => {setSelectedTag(subTagsWithCount[idx].tag); onTagSelect(subTagsWithCount[idx].tag);}}>
+                    <button key={"btn-subtag-" + tag.tag} id={"btn-subtag-" + tag.tag} name={"btn-subtag-" + tag.tag} className={"btn-link "}
+                        onClick={() => {setSelectedTag(subTagsWithCount[idx].tag); setBreadCrumbs((old) => [...old, subTagsWithCount[idx].tag]); onTagSelect(subTagsWithCount[idx].tag);}}>
                         {tag.tag + "(" + Math.floor(tag.frequency * 100) + "%)"}
                     </button>
                 ))}
                 </>
             }
 
-            <p>All tags</p>
-            {tagsWithCount.map((tag, idx) => (
-                <button key={"btn-" + tag.tag} id={"btn-" + tag.tag} name={"btn-" + tag.tag} className={(selectedTag === tag.tag || (tag.tag === "Tous" && selectedTag === "")) ? "btn-link-selected " : "btn-link "} onClick={() => {setSelectedTag(idx === 0 ? "" : tagsWithCount[idx].tag); onTagSelect(idx === 0 ? "" : tagsWithCount[idx].tag);}}>
-                    {tag.tag === "Tous" ? tag.tag : tag.tag + "(" + Math.floor(tag.frequency * 100) + "%)"}
-                </button>
-            ))}
+            {breadCrumbs.length === 1 &&
+                <>
+                {tagsWithCount.map((tag, idx) => (
+                    <button key={"btn-" + tag.tag} id={"btn-" + tag.tag} name={"btn-" + tag.tag} className={(selectedTag === tag.tag || (tag.tag === "Tous" && selectedTag === "")) ? "btn-link-selected " : "btn-link "}
+                        onClick={() => {setSelectedTag(idx === 0 ? "" : tagsWithCount[idx].tag); setBreadCrumbs(idx === 0 ? ["Tous"] : ["Tous", tagsWithCount[idx].tag]); onTagSelect(idx === 0 ? "" : tagsWithCount[idx].tag);}}>
+                        {tag.tag === "Tous" ? tag.tag : tag.tag + "(" + Math.floor(tag.frequency * 100) + "%)"}
+                    </button>
+                ))}
+                </>
+            }
         </div>
     )
 }

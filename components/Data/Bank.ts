@@ -104,7 +104,6 @@ export function extractTags(lines: IAccountLine[]): string[] {
 export function extractTagsWithCount(lines: IAccountLine[], startingTag: string | undefined): ITag[] {
     let tags: ITag[] = [];
 
-    debugger;
     for (let i = 0; i < lines.length; i++) {
         let startIdx = 0;
         let endIdx = lines[i].tags.length;
@@ -126,11 +125,6 @@ export function extractTagsWithCount(lines: IAccountLine[], startingTag: string 
         }
 
         for (let j = startIdx; j < endIdx; j++) {
-
-            if(lines[i].tags[j] === startingTag) {
-                debugger;
-            }
-
             const tagIdx = tags.findIndex((tag) => tag.tag === lines[i].tags[j]);
             if (tagIdx === -1) {
                 tags.push({tag: lines[i].tags[j], count: 1, frequency: 1/lines.length});

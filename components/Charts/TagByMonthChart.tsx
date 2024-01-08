@@ -23,6 +23,7 @@ export function TagByMonthChart({
     const [periodData, setPeriodData] = useState<IPeriodData[]>([]);
 
     useEffect(() => {
+        debugger;
         const taggedLines = tag === "" ? accountLines : accountLines.filter((line) => line.tags.indexOf(tag) !== -1);
         const groupByTag = aggregateByTags(taggedLines, -1, tag);
         const tags = Object.keys(groupByTag).sort();
@@ -47,7 +48,14 @@ export function TagByMonthChart({
                 // Search any lines containing the tag but no other tags already processed
                 subTaggedLines = taggedLines.filter((line) => {
                     const tagIdx = line.tags.indexOf(tag);
-                    return line.tags.indexOf(tags[i]) === (tagIdx + 1) //&& !line.tags.some(t => processedTags.includes(t)
+                    if (tagIdx < (line.tags.length - 1)) {
+                        //Tag is not the last tag of the line
+                        return line.tags.indexOf(tags[i]) === (tagIdx + 1) //&& !line.tags.some(t => processedTags.includes(t)
+                    }
+                    else {
+                        //Tag is the last tag of the line, check with the first tag for grouping
+                        return line.tags.indexOf(tags[i]) === 0 //&& !line.tags.some(t => processedTags.includes(t)
+                    }
                 });
             }
             const groupSubTagByDate = aggregateByDate(subTaggedLines, true);
@@ -80,7 +88,6 @@ export function TagByMonthChart({
 
     return (
         <>
-
         {
             periodData.map((p, idx) => {
                 return (
