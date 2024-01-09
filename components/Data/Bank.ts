@@ -146,6 +146,30 @@ export function extractTagsWithCount(lines: IAccountLine[], startingTag: string 
     });
 }
 
+export function extractMainTagsWithCount(lines: IAccountLine[]): ITag[] {
+    let tags: ITag[] = [];
+
+    for (let i = 0; i < lines.length; i++) {
+        const tagIdx = tags.findIndex((tag) => tag.tag === lines[i].tags[0]);
+        if (tagIdx === -1) {
+            tags.push({tag: lines[i].tags[0], count: 1, frequency: 1/lines.length});
+        }
+        else {
+            tags[tagIdx].count++;
+            tags[tagIdx].frequency = tags[tagIdx].count/lines.length;
+        }
+    }
+
+    return tags.sort((a, b) => {
+        const freqA = Math.floor(a.frequency * 100);
+        const freqB = Math.floor(b.frequency * 100);
+        if (freqA === freqB) {
+            return a.tag > b.tag ? 1 : -1;
+        }
+        return (Math.floor(b.frequency * 100) - Math.floor(a.frequency * 100));
+    });
+}
+
 export function aggregateByTag(lines: IAccountLine[], tag: string): TagLine {
     let agregate: TagLine = {};
     const taggedLines = tag === "" ? lines : lines.filter((line) => line.tags.indexOf(tag) !== -1);

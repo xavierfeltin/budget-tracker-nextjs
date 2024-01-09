@@ -1,6 +1,6 @@
 import './TagList.css';
 import { useEffect, useState } from "react";
-import { IAccountLines, ITag, extractTagsWithCount } from "../Data/Bank";
+import { IAccountLines, ITag, extractMainTagsWithCount, extractTagsWithCount } from "../Data/Bank";
 
 export interface InputRangeProps {
     account: IAccountLines;
@@ -18,7 +18,7 @@ export function TagList({
     const [breadCrumbs, setBreadCrumbs] = useState<string[]>(["Tous"]);
 
     useEffect(() => {
-        const listWithCount = extractTagsWithCount(account.lines, undefined)
+        const listWithCount = extractMainTagsWithCount(account.lines); //extractTagsWithCount(account.lines, undefined)
         setTagsWithCount([{tag: "Tous", count: account.lines.length, frequency: 1}, ...listWithCount]);
     }, [account])
 
