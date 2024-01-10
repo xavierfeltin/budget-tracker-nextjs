@@ -32,7 +32,6 @@ export default function MobileBrowser() {
   const [useBudget, setUseBudget] = useState<boolean>(false);
 
   const [isDataGenerated, setIsDataGenerated] = useState<boolean>(false);
-  const [isMappingLoaded, setIsMappingLoaded] = useState<boolean>(false);
   const [isDataToTagLoaded, setisDataToTagLoaded] = useState<boolean>(false);
   const [periods, setPeriods] = useState<IAccountPeriod[]>([]);
   const [selectedTag, setSelectedTag] = useState<string>("");
@@ -59,10 +58,6 @@ export default function MobileBrowser() {
   useEffect(() => {
     if (periods.length > 0) {
       setIsDataGenerated(true);
-    }
-
-    if (Object.keys(mapping).length > 0) {
-      setIsMappingLoaded(true);
     }
 
     if (linesToTag.length > 0) {
@@ -102,10 +97,7 @@ export default function MobileBrowser() {
   }
 
   const handleNavSelection = (navAction: string, period?: IAccountPeriod) => {
-    if (navAction === "Load") {
-      console.log("todo : display load accounts");
-    }
-    else if (navAction === "DisplayAccount" && period) {
+    if (navAction === "DisplayAccount" && period) {
       console.log("Display selected period " + period.begin.toLocaleDateString() + " - " + period.end.toLocaleDateString());
       setSelectedPeriod(period);
     }
@@ -117,14 +109,14 @@ export default function MobileBrowser() {
       <main className='main'>
         <div>
 
-          {!isLoadingFromLocalDrive &&
+          {!isLoadingFromLocalDrive && !isDataGenerated &&
             <div className='section-wrapper'>
                 <p>Load from Google Drive</p>
                 <GoogleLogin CLIENT_ID={CLIENT_ID} API_KEY={API_KEY} SCOPES={SCOPES} DISCOVERY_DOC={DISCOVERY_DOC} onChange={(status: boolean) => setIsLoggedOut(status)}></GoogleLogin>
             </div>
           }
 
-          {!isLoggedOut &&
+          {!isLoggedOut && !isDataGenerated &&
             <>
             <>
             <div className='section-wrapper'>
@@ -158,7 +150,7 @@ export default function MobileBrowser() {
             </>
           }
 
-          {isLoggedOut &&
+          {isLoggedOut && !isDataGenerated &&
             <div className='section-wrapper'>
               <p>Load from computer</p>
               <>

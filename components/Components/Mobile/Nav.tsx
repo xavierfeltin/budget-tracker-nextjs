@@ -24,17 +24,8 @@ export function Nav({
 
     return (
         <nav className={`navbar ${showLinks ? "navbar show-nav" : "hide-nav"}`}>
-            <button className="navbar__burger" onClick={() => handleShowLinks("")}>
-                <span className="burger-bar"></span>
-            </button>
             <div className="navbar__links"></div>
             <ul className="navbar__links">
-                <li className="navbar__item slideInDown-1">
-                    <button className="navbar__link burger-item" onClick={() => handleShowLinks("Load")}>
-                        Load accounts
-                    </button>
-                </li>
-
                 {periods.map((account, idx)=> {
                     const nbUntaggedLines = account.lines.filter((line) => line.tags.length === 0).length;
 
@@ -45,6 +36,9 @@ export function Nav({
                     </li>
                 })}
             </ul>
+            <button className="navbar__burger" onClick={() => handleShowLinks("")}>
+                <span className="burger-bar"></span>
+            </button>
         </nav>
     )
 }

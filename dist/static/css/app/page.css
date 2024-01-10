@@ -179,7 +179,7 @@ a {
         /*
         TODO: Align on the right side the burger menu
         Issue with burger disappearing when clicking on tags. Force to static for now.
-        position: relative;
+        position: static;
         top: 1rem;
         right: 1rem;
         */

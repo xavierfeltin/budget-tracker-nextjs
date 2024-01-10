@@ -218,8 +218,7 @@ export function aggregateByDate(lines: IAccountLine[], monthly: boolean = false)
 }
 
 export function getAccountPeriodStr(account: IAccountPeriod): string {
-    let aggregatedMention = account.isAggregated ? " (Aggregated) " : "";
-    return account.begin.toLocaleDateString() + " - " + account.end.toLocaleDateString() + aggregatedMention;
+    return account.isAggregated ? "All periods" : account.begin.toLocaleDateString() + " - " + account.end.toLocaleDateString();
 }
 
 export function getWholePeriod(accounts: IAccountPeriod[]): IAccountPeriod {
