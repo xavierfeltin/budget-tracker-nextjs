@@ -7,23 +7,22 @@ export interface InputRangeProps {
     handleNavSelection: (navAction: string, period?: IAccountPeriod) => void
 }
 
-
 //tutorial: https://www.youtube.com/watch?v=hmoavRdx4YM
 export function Nav({
     periods,
     handleNavSelection}: InputRangeProps) {
 
-        const [showLinks, setShowLinks] = useState<boolean>(false);
+    const [showLinks, setShowLinks] = useState<boolean>(false);
 
-        const handleShowLinks = (navAction: string, period?: IAccountPeriod) => {
-            setShowLinks(!showLinks);
+    const handleShowLinks = (navAction: string, period?: IAccountPeriod) => {
+        setShowLinks(!showLinks);
 
-            if (navAction) {
-                handleNavSelection(navAction, period);
-            }
+        if (navAction) {
+            handleNavSelection(navAction, period);
         }
+    }
 
-        return (
+    return (
         <nav className={`navbar ${showLinks ? "navbar show-nav" : "hide-nav"}`}>
             <button className="navbar__burger" onClick={() => handleShowLinks("")}>
                 <span className="burger-bar"></span>

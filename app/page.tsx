@@ -2,31 +2,30 @@
 
 import MobileBrowser from '@/components/Components/MobileBrowser';
 import WebBrowser from '@/components/Components/WebBrowser';
+import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
+import { BrowserView, MobileView } from 'react-device-detect';
 
 export default function Home() {
-  //const [width, setWidth] = useState<number>(window.innerWidth);
-  const mobileSize: number = 768;
-  const [isMobile, setIsMobile] = useState<boolean>(window.innerWidth <= mobileSize);
+  //https://stackoverflow.com/questions/39435395/reactjs-how-to-determine-if-the-application-is-being-viewed-on-mobile-or-deskto
 
-  function handleWindowSizeChange() {
-    setIsMobile(window.innerWidth <= mobileSize);
-  }
-
+  const [mounted, setMounted] = useState<boolean>(false);
   useEffect(() => {
-    window.addEventListener('resize', handleWindowSizeChange);
-    return () => {
-      window.removeEventListener('resize', handleWindowSizeChange);
-    }
-  }, []);
+    setMounted(true);
+  }, [])
 
   return (
     <>
-    {isMobile &&
-      <MobileBrowser/>
-    }
-    {!isMobile &&
-      <WebBrowser/>
+    {mounted &&
+      <>
+      <BrowserView>
+          <WebBrowser/>
+      </BrowserView>
+
+      <MobileView>
+        <MobileBrowser/>
+      </MobileView>
+      </>
     }
     </>
   )

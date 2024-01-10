@@ -6,15 +6,10 @@ import { useCallback, useEffect, useState } from 'react';
 import { CSVBankExtractLoader } from '../../components/Loaders/CSVBankExtractLoader';
 import { CSVBudgetExtractLoader } from '../../components/Loaders/CSVBudgetExtractLoader';
 import { EDocumentType, IAccountPeriod, TBudget, TMapping, getWholePeriod, tagPeriods } from "../../components/Data/Bank";
-import { Balance } from '../../components/Components/Balance';
 import { TagList } from '../../components/Components/TagList';
 import { BalanceHistoryChart } from '../../components/Charts/BalanceHistoryChart';
 import { TagHistoryChart } from '../../components/Charts/TagHistoryChart';
 import { TagRepartitionChart } from '../../components/Charts/TagRepartitionChart';
-import { AccountList } from '../../components/Components/AccountList';
-import { ExportMapping } from '../../components/Exporters/ExportMapping';
-import { MappingExtractLoader } from '../../components/Loaders/MappingExtractLoader';
-import { ExportTaggedCSV } from '../../components/Exporters/ExportTaggedCSV';
 import { Lines } from '../../components/Components/Lines';
 import { GoogleCSVUploader } from '@/components/Loaders/GoogleCSVUploader';
 import { CSVUploader } from '@/components/Loaders/CSVUploader';
@@ -31,7 +26,6 @@ export default function MobileBrowser() {
   const [isLoadingFromLocalDrive, setLoadingFromLocalDrive] = useState<boolean>(false);
 
   const [accountFiles, setAccountFiles] = useState<File[]>([]);
-  const [mappingfiles, setMappingFiles] = useState<File[]>([]);
   const [budgetFiles, setBudgetFiles] = useState<File[]>([]);
 
   const [useAccount, setUseAccount] = useState<boolean>(false);
@@ -61,13 +55,6 @@ export default function MobileBrowser() {
         setSelectedPeriod(wholePeriod);
     }
   }, []);
-
-  const handleCSVToTagLoading = useCallback((data: IAccountPeriod[]): void => {
-    if (data.length > 0) {
-        const taggedData: IAccountPeriod[] = tagPeriods(data, mapping);
-        setLinesToTag(taggedData)
-    }
-  }, [mapping]);
 
   useEffect(() => {
     if (periods.length > 0) {
@@ -114,18 +101,6 @@ export default function MobileBrowser() {
     handleLoadedFiles(loadedFiles, documentType);
   }
 
-  const handlePeriodSelection = (period: IAccountPeriod) => {
-    setSelectedPeriod(period);
-
-    //Force to display expenses view when selecting aggregated period when budget was displayed
-    setSelectedMode((old) => {
-      if (old === "budget" && period.isAggregated) {
-        return "expenses";
-      }
-      return old;
-    });
-  }
-
   const handleNavSelection = (navAction: string, period?: IAccountPeriod) => {
     if (navAction === "Load") {
       console.log("todo : display load accounts");
@@ -137,134 +112,134 @@ export default function MobileBrowser() {
   }
 
   return (
-    <div>
-        <Nav handleNavSelection={handleNavSelection} periods={periods}></Nav>
-        <main className='main'>
-          <div>
+    <>
+      <Nav handleNavSelection={handleNavSelection} periods={periods}></Nav>
+      <main className='main'>
+        <div>
 
-            {!isLoadingFromLocalDrive &&
+          {!isLoadingFromLocalDrive &&
+            <div className='section-wrapper'>
+                <p>Load from Google Drive</p>
+                <GoogleLogin CLIENT_ID={CLIENT_ID} API_KEY={API_KEY} SCOPES={SCOPES} DISCOVERY_DOC={DISCOVERY_DOC} onChange={(status: boolean) => setIsLoggedOut(status)}></GoogleLogin>
+            </div>
+          }
+
+          {!isLoggedOut &&
+            <>
+            <>
+            <div className='section-wrapper'>
+              <p>Accounts</p>
+              <GoogleCSVUploader handleFiles={handleLoadedFiles} documentType={EDocumentType.ACCOUNT}></GoogleCSVUploader>
+              {useAccount &&
+                <>
+                <p>Budget</p>
+                <GoogleCSVUploader handleFiles={handleLoadedFiles} documentType={EDocumentType.BUDGET}></GoogleCSVUploader>
+                </>
+              }
+            </div>
+
+            {!useAccount &&
               <div className='section-wrapper'>
-                  <p>Load from Google Drive</p>
-                  <GoogleLogin CLIENT_ID={CLIENT_ID} API_KEY={API_KEY} SCOPES={SCOPES} DISCOVERY_DOC={DISCOVERY_DOC} onChange={(status: boolean) => setIsLoggedOut(status)}></GoogleLogin>
+                <p>Mappings</p>
+                <GoogleCSVUploader handleFiles={handleLoadedFiles} documentType={EDocumentType.MAPPING}></GoogleCSVUploader>
               </div>
             }
+            </>
 
-            {!isLoggedOut &&
+            {useAccount &&
               <>
-              <>
-              <div className='section-wrapper'>
-                <p>Accounts</p>
-                <GoogleCSVUploader handleFiles={handleLoadedFiles} documentType={EDocumentType.ACCOUNT}></GoogleCSVUploader>
-                {useAccount &&
-                  <>
-                  <p>Budget</p>
-                  <GoogleCSVUploader handleFiles={handleLoadedFiles} documentType={EDocumentType.BUDGET}></GoogleCSVUploader>
-                  </>
-                }
-              </div>
+              <CSVBankExtractLoader idExtract="A" onValuesChange={handleCSVLoading} files={accountFiles}/>
 
-              {!useAccount &&
-                <div className='section-wrapper'>
-                  <p>Mappings</p>
-                  <GoogleCSVUploader handleFiles={handleLoadedFiles} documentType={EDocumentType.MAPPING}></GoogleCSVUploader>
-                </div>
+              {useBudget &&
+                <CSVBudgetExtractLoader onValuesChange={setBudgets} files={budgetFiles}/>
+              }
+              </>
+            }
+            </>
+          }
+
+          {isLoggedOut &&
+            <div className='section-wrapper'>
+              <p>Load from computer</p>
+              <>
+              <CSVUploader handleFiles={handleLocalLoadedFiles} documentType={EDocumentType.ACCOUNT} formId="load-accounts" actionLabel='Load Accounts'></CSVUploader>
+              {useAccount &&
+                <CSVUploader handleFiles={handleLocalLoadedFiles} documentType={EDocumentType.BUDGET} formId="load-budget" actionLabel='Load Budgets'></CSVUploader>
               }
               </>
 
               {useAccount &&
                 <>
-                <CSVBankExtractLoader idExtract="A" onValuesChange={handleCSVLoading} files={accountFiles}/>
+                <CSVBankExtractLoader idExtract="C" onValuesChange={handleCSVLoading} files={accountFiles}/>
 
                 {useBudget &&
                   <CSVBudgetExtractLoader onValuesChange={setBudgets} files={budgetFiles}/>
                 }
-                </>
-              }
               </>
-            }
-
-            {isLoggedOut &&
-              <div className='section-wrapper'>
-                <p>Load from computer</p>
-                <>
-                <CSVUploader handleFiles={handleLocalLoadedFiles} documentType={EDocumentType.ACCOUNT} formId="load-accounts" actionLabel='Load Accounts'></CSVUploader>
-                {useAccount &&
-                  <CSVUploader handleFiles={handleLocalLoadedFiles} documentType={EDocumentType.BUDGET} formId="load-budget" actionLabel='Load Budgets'></CSVUploader>
-                }
-                </>
-
-                {useAccount &&
-                  <>
-                  <CSVBankExtractLoader idExtract="C" onValuesChange={handleCSVLoading} files={accountFiles}/>
-
-                  {useBudget &&
-                    <CSVBudgetExtractLoader onValuesChange={setBudgets} files={budgetFiles}/>
-                  }
-                </>
-                }
-              </div>
-            }
-
-            {isDataGenerated &&
-              <div className='section-wrapper'>
-                <TagList account={selectedPeriod} onTagSelect={setSelectedTag}/>
-              </div>
-            }
-          </div>
-
-          {isDataGenerated &&
-            <div>
-              <div>
-                <button id={"btn-display-expenses"} name={"btn-display-expenses"} className={selectedMode === "expenses" ? "btn-link-selected " : "btn-link "} onClick={() => {setSelectedMode("expenses")}}>
-                    Display Expenses
-                </button>
-                <button id={"btn-display-lines"} name={"btn-display-lines"} className={selectedMode === "lines" ? "btn-link-selected " : "btn-link "} onClick={() => {setSelectedMode("lines")}}>
-                    Display Account lines
-                </button>
-              </div>
-
-              {selectedMode === "expenses" &&
-                <div>
-                  {selectedTag === "" &&
-                    <div>
-                      {selectedPeriod.isAggregated &&
-                        <BalanceHistoryChart accountLines={selectedPeriod.lines}/>
-                      }
-                      {!selectedPeriod.isAggregated &&
-                        <QuartileHistoryChart accountLines={selectedPeriod.lines} allAccountLines={periods.map((period) => period.lines).flat()}></QuartileHistoryChart>
-                      }
-
-                      <TagByMonthChart accountLines={selectedPeriod.lines} tag={selectedTag}/>
-                      <TagRepartitionChart accountLines={selectedPeriod.lines} tag={selectedTag}/>
-
-                    </div>
-                  }
-
-                  {selectedTag !== "" &&
-                    <div>
-                      {selectedPeriod.isAggregated &&
-                        <TagMonthlyTendencyChart accountLines={selectedPeriod.lines} tag={selectedTag} allowedAmount={Object.keys(budgets).length === 0 ? 0 : budgets[selectedTag]}/>
-                      }
-                      <div className="chart-container">
-                      {!selectedPeriod.isAggregated &&
-                        <TagBudgetConsumptionChart allowedAmount={Object.keys(budgets).length === 0 ? 0 : budgets[selectedTag]} accountLines={selectedPeriod.lines} tag={selectedTag}></TagBudgetConsumptionChart>
-                      }
-                      <TagByMonthChart accountLines={selectedPeriod.lines} tag={selectedTag}/>
-                      <TagRepartitionChart accountLines={selectedPeriod.lines} tag={selectedTag}/>
-                      </div>
-
-                      <TagHistoryChart accountLines={selectedPeriod.lines} tag={selectedTag}/>
-                    </div>
-                  }
-                </div>
-              }
-
-              {selectedMode === "lines" &&
-                <Lines accountLines={selectedPeriod.lines} tag={selectedTag}/>
               }
             </div>
           }
-        </main>
-    </div>
+
+          {isDataGenerated &&
+            <div className='section-wrapper'>
+              <TagList account={selectedPeriod} onTagSelect={setSelectedTag}/>
+            </div>
+          }
+        </div>
+
+        {isDataGenerated &&
+          <div>
+            <div>
+              <button id={"btn-display-expenses"} name={"btn-display-expenses"} className={selectedMode === "expenses" ? "btn-link-selected " : "btn-link "} onClick={() => {setSelectedMode("expenses")}}>
+                  Display Expenses
+              </button>
+              <button id={"btn-display-lines"} name={"btn-display-lines"} className={selectedMode === "lines" ? "btn-link-selected " : "btn-link "} onClick={() => {setSelectedMode("lines")}}>
+                  Display Account lines
+              </button>
+            </div>
+
+            {selectedMode === "expenses" &&
+              <div>
+                {selectedTag === "" &&
+                  <div>
+                    {selectedPeriod.isAggregated &&
+                      <BalanceHistoryChart accountLines={selectedPeriod.lines}/>
+                    }
+                    {!selectedPeriod.isAggregated &&
+                      <QuartileHistoryChart accountLines={selectedPeriod.lines} allAccountLines={periods.map((period) => period.lines).flat()}></QuartileHistoryChart>
+                    }
+
+                    <TagByMonthChart accountLines={selectedPeriod.lines} tag={selectedTag}/>
+                    <TagRepartitionChart accountLines={selectedPeriod.lines} tag={selectedTag}/>
+
+                  </div>
+                }
+
+                {selectedTag !== "" &&
+                  <div>
+                    {selectedPeriod.isAggregated &&
+                      <TagMonthlyTendencyChart accountLines={selectedPeriod.lines} tag={selectedTag} allowedAmount={Object.keys(budgets).length === 0 ? 0 : budgets[selectedTag]}/>
+                    }
+                    <div className="chart-container">
+                    {!selectedPeriod.isAggregated &&
+                      <TagBudgetConsumptionChart allowedAmount={Object.keys(budgets).length === 0 ? 0 : budgets[selectedTag]} accountLines={selectedPeriod.lines} tag={selectedTag}></TagBudgetConsumptionChart>
+                    }
+                    <TagByMonthChart accountLines={selectedPeriod.lines} tag={selectedTag}/>
+                    <TagRepartitionChart accountLines={selectedPeriod.lines} tag={selectedTag}/>
+                    </div>
+
+                    <TagHistoryChart accountLines={selectedPeriod.lines} tag={selectedTag}/>
+                  </div>
+                }
+              </div>
+            }
+
+            {selectedMode === "lines" &&
+              <Lines accountLines={selectedPeriod.lines} tag={selectedTag}/>
+            }
+          </div>
+        }
+      </main>
+    </>
   )
 }
