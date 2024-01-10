@@ -63,8 +63,6 @@ export function CSVBudgetExtractLoader({
             return dataRow;
         })
 
-        debugger;
-
         const data: TBudget = {};
         for (let i = 0; i < lines.length; i++) {
             data[lines[i].tag] = lines[i].amount;

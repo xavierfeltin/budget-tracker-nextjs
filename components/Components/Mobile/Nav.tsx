@@ -25,6 +25,9 @@ export function Nav({
 
         return (
         <nav className={`navbar ${showLinks ? "navbar show-nav" : "hide-nav"}`}>
+            <button className="navbar__burger" onClick={() => handleShowLinks("")}>
+                <span className="burger-bar"></span>
+            </button>
             <div className="navbar__links"></div>
             <ul className="navbar__links">
                 <li className="navbar__item slideInDown-1">
@@ -43,9 +46,6 @@ export function Nav({
                     </li>
                 })}
             </ul>
-            <button className="navbar__burger" onClick={() => handleShowLinks("")}>
-                <span className="burger-bar"></span>
-            </button>
         </nav>
     )
 }

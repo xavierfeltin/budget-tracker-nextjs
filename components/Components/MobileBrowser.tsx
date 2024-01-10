@@ -214,8 +214,6 @@ export default function MobileBrowser() {
 
           {isDataGenerated &&
             <div>
-              <Balance account={selectedPeriod} tag={selectedTag}/>
-
               <div>
                 <button id={"btn-display-expenses"} name={"btn-display-expenses"} className={selectedMode === "expenses" ? "btn-link-selected " : "btn-link "} onClick={() => {setSelectedMode("expenses")}}>
                     Display Expenses

@@ -23,7 +23,6 @@ export function TagByMonthChart({
     const [periodData, setPeriodData] = useState<IPeriodData[]>([]);
 
     useEffect(() => {
-        debugger;
         const taggedLines = tag === "" ? accountLines : accountLines.filter((line) => line.tags.indexOf(tag) !== -1);
         const groupByTag = aggregateByTags(taggedLines, -1, tag);
         const tags = Object.keys(groupByTag).sort();

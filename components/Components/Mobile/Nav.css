@@ -95,9 +95,14 @@ a {
 
     .navbar__burger {
         display: block;
-        position: fixed;
+        position: static;
+        /*
+        TODO: Align on the right side the burger menu
+        Issue with burger disappearing when clicking on tags. Force to static for now.
+        position: relative;
         top: 1rem;
         right: 1rem;
+        */
     }
 
     .navbar__burger:hover {
