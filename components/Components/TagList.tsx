@@ -37,10 +37,10 @@ export function TagList({
 
     return (
         <div>
-            <p>
+            <span>
             {breadCrumbs.map((tag, idx) => (
                 <>
-                <button key={"btn-breadcrumb-" + tag} id={"btn-breadcrumb-" + tag} name={"btn-breadcrumb-" + tag} className={"btn-link "}
+                <button key={"btn-breadcrumb-" + tag} id={"btn-breadcrumb-" + tag} name={"btn-breadcrumb-" + tag} className={"button-link-breadcrumb"}
                     onClick={() => {
                         const selectedCrumb = breadCrumbs[idx];
                         const mappedTag = selectedCrumb === "Tous" ? "" : selectedCrumb;
@@ -55,9 +55,9 @@ export function TagList({
                 }
                 </>
             ))}
-            </p>
+            </span>
 
-            <p>Select tags</p>
+            <div className='section-wrapper-border'>
             {breadCrumbs.length > 1 &&
                 <>
                 {subTagsWithCount.map((tag, idx) => (
@@ -71,14 +71,20 @@ export function TagList({
 
             {breadCrumbs.length === 1 &&
                 <>
-                {tagsWithCount.map((tag, idx) => (
-                    <button key={"btn-" + tag.tag} id={"btn-" + tag.tag} name={"btn-" + tag.tag} className={(selectedTag === tag.tag || (tag.tag === "Tous" && selectedTag === "")) ? "btn-link-selected " : "btn-link "}
-                        onClick={() => {setSelectedTag(idx === 0 ? "" : tagsWithCount[idx].tag); setBreadCrumbs(idx === 0 ? ["Tous"] : ["Tous", tagsWithCount[idx].tag]); onTagSelect(idx === 0 ? "" : tagsWithCount[idx].tag);}}>
-                        {tag.tag === "Tous" ? tag.tag : tag.tag + "(" + Math.floor(tag.frequency * 100) + "%)"}
-                    </button>
-                ))}
+                {tagsWithCount.map((tag, idx) => {
+                    const buttons: JSX.Element[] = [];
+                    if (tag.tag !== "Tous") {
+                        const button = <button key={"btn-" + tag.tag} id={"btn-" + tag.tag} name={"btn-" + tag.tag} className={(selectedTag === tag.tag || (tag.tag === "Tous" && selectedTag === "")) ? "btn-link-selected " : "btn-link "}
+                            onClick={() => {setSelectedTag(idx === 0 ? "" : tagsWithCount[idx].tag); setBreadCrumbs(idx === 0 ? ["Tous"] : ["Tous", tagsWithCount[idx].tag]); onTagSelect(idx === 0 ? "" : tagsWithCount[idx].tag);}}>
+                            {tag.tag === "Tous" ? tag.tag : tag.tag + "(" + Math.floor(tag.frequency * 100) + "%)"}
+                        </button>
+                        buttons.push(button);
+                    }
+                    return buttons;
+                })}
                 </>
             }
+            </div>
         </div>
     )
 }

@@ -66,17 +66,6 @@ export function QuartileHistoryChart({
 
     const chartReference = useRef(null);
 
-    useEffect(() => {
-        if (chartReference) {
-            const chart = chartReference.current as ChartJS|null;
-            if (chart && chartData.datasets.length > 0) {
-                const width = chart.ctx.canvas.parentElement?.style.width ? chart.ctx.canvas.width : 1370;
-                chart.resize(width, chart.canvas.height);
-                chart.update();
-            }
-        }
-    },[chartReference, chartData]);
-
     // Fill space between two lines: https://stackoverflow.com/questions/37866992/filling-area-between-two-lines-chart-js-v2
     useEffect(() => {
 

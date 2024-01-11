@@ -68,17 +68,6 @@ export function TagMonthlyTendencyChart({
     const chartReference = useRef(null);
 
     useEffect(() => {
-        if (chartReference) {
-            const chart = chartReference.current as ChartJS|null;
-            if (chart && chartData.datasets.length > 0) {
-                const width = chart.ctx.canvas.parentElement?.style.width ? chart.ctx.canvas.width : 1370;
-                chart.resize(width, chart.canvas.height);
-                chart.update();
-            }
-        }
-    },[chartReference, chartData]);
-
-    useEffect(() => {
         let datasets: IChartDataset[] = [];
         const taggedLines = tag === "" ? accountLines : accountLines.filter((line) => line.tags.indexOf(tag) !== -1);
         const groupByTag = aggregateByTags(taggedLines, -1, tag);

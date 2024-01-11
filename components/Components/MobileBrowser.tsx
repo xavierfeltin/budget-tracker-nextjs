@@ -5,7 +5,7 @@ import "./MobileBrowser.css";
 import { useCallback, useEffect, useState } from 'react';
 import { CSVBankExtractLoader } from '../../components/Loaders/CSVBankExtractLoader';
 import { CSVBudgetExtractLoader } from '../../components/Loaders/CSVBudgetExtractLoader';
-import { EDocumentType, IAccountPeriod, TBudget, TMapping, getWholePeriod, tagPeriods } from "../../components/Data/Bank";
+import { EDocumentType, IAccountPeriod, TBudget, TMapping, getAccountPeriodStr, getWholePeriod, tagPeriods } from "../../components/Data/Bank";
 import { TagList } from '../../components/Components/TagList';
 import { BalanceHistoryChart } from '../../components/Charts/BalanceHistoryChart';
 import { TagHistoryChart } from '../../components/Charts/TagHistoryChart';
@@ -129,13 +129,6 @@ export default function MobileBrowser() {
                 </>
               }
             </div>
-
-            {!useAccount &&
-              <div className='section-wrapper'>
-                <p>Mappings</p>
-                <GoogleCSVUploader handleFiles={handleLoadedFiles} documentType={EDocumentType.MAPPING}></GoogleCSVUploader>
-              </div>
-            }
             </>
 
             {useAccount &&
@@ -149,39 +142,16 @@ export default function MobileBrowser() {
             }
             </>
           }
-
-          {isLoggedOut && !isDataGenerated &&
-            <div className='section-wrapper'>
-              <p>Load from computer</p>
-              <>
-              <CSVUploader handleFiles={handleLocalLoadedFiles} documentType={EDocumentType.ACCOUNT} formId="load-accounts" actionLabel='Load Accounts'></CSVUploader>
-              {useAccount &&
-                <CSVUploader handleFiles={handleLocalLoadedFiles} documentType={EDocumentType.BUDGET} formId="load-budget" actionLabel='Load Budgets'></CSVUploader>
-              }
-              </>
-
-              {useAccount &&
-                <>
-                <CSVBankExtractLoader idExtract="C" onValuesChange={handleCSVLoading} files={accountFiles}/>
-
-                {useBudget &&
-                  <CSVBudgetExtractLoader onValuesChange={setBudgets} files={budgetFiles}/>
-                }
-              </>
-              }
-            </div>
-          }
-
-          {isDataGenerated &&
-            <div className='section-wrapper'>
-              <TagList account={selectedPeriod} onTagSelect={setSelectedTag}/>
-            </div>
-          }
         </div>
 
         {isDataGenerated &&
           <div>
-            <div>
+            <p>{selectedPeriod.isAggregated ? getAccountPeriodStr(selectedPeriod) : "Period of " + getAccountPeriodStr(selectedPeriod)}</p>
+            <div className='section-wrapper'>
+              <TagList account={selectedPeriod} onTagSelect={setSelectedTag}/>
+            </div>
+
+            <div className='section-wrapper'>
               <button id={"btn-display-expenses"} name={"btn-display-expenses"} className={selectedMode === "expenses" ? "btn-link-selected " : "btn-link "} onClick={() => {setSelectedMode("expenses")}}>
                   Display Expenses
               </button>

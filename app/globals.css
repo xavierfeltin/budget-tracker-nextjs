@@ -46,7 +46,7 @@ div.leftColumn {
 
 .btn-link-selected {
   font-weight: bold;
-  color: red;
+  color: darkred;
   background: none!important;
   border: none;
   padding: 0!important;

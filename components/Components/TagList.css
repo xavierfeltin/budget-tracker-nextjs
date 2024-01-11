@@ -29,3 +29,16 @@
     display: block;
     margin: 8px 0;
 }
+
+.button-link-breadcrumb {
+    color: red;
+    font-size: small;
+    font-weight: bold;
+    background: none!important;
+    border: none;
+    padding: 0!important;
+    margin: 5px;
+    font-family: arial, sans-serif;
+    text-decoration: underline;
+    cursor: pointer;
+}
