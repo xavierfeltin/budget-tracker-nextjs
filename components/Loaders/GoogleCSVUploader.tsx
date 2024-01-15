@@ -24,7 +24,7 @@ const getFormIdFromDocumentType = (type: EDocumentType): string => {
 const getQueryFilterFromDocumentType = (folderId: string, type: EDocumentType): string => {
     switch (type) {
         case EDocumentType.ACCOUNT:
-            return "'" + folderId + "' in parents and mimeType='text/csv' and not name contains 'mapping'";
+            return "'" + folderId + "' in parents and mimeType='text/csv' and not name contains 'mapping' and not name contains 'budget'";
         case EDocumentType.MAPPING:
             return "'" + folderId + "' in parents and mimeType='text/csv' and name contains 'mapping'";
         case EDocumentType.BUDGET:
@@ -80,7 +80,7 @@ export function GoogleCSVUploader({
             'corpora': 'user',
             'includeItemsFromAllDrives': true,
             'supportsAllDrives': true,
-            'orderBy': 'name',
+            'orderBy': 'name desc',
             'q': getQueryFilterFromDocumentType(folderId, documentType),
             'fields': 'files(id, name)'
             });
