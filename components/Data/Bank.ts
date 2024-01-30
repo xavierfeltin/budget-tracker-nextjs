@@ -146,6 +146,55 @@ export function extractTagsWithCount(lines: IAccountLine[], startingTag: string 
     });
 }
 
+export function extractTagsWithCount2(lines: IAccountLine[], startingTag: string | undefined): ITag[] {
+    let tags: ITag[] = [];
+    const listStartingTag = startingTag ? startingTag.split(">") : [];
+    const lastStartingTag = startingTag ? listStartingTag[listStartingTag.length-1] : "";
+
+    debugger;
+    for (let i = 0; i < lines.length; i++) {
+        let startIdx = 0;
+        let endIdx = lines[i].tags.length;
+
+        const rootTags = lines[i].tags.join(">");
+        if (startingTag && rootTags.startsWith(startingTag)) {
+            // Consider only the next after the startingTag if they share the same root
+            const idx = lines[i].tags.findIndex((tag) => tag === lastStartingTag);
+            if (idx === (lines[i].tags.length - 1)) {
+                //Ignore
+                continue;
+                // If startingTag is the last one in the tag list, consider the first tag of the list instead
+                //startIdx = 0;
+                //endIdx = 1;
+            }
+
+            startIdx = idx + 1;
+            endIdx = idx + 2;
+
+            for (let j = startIdx; j < endIdx; j++) {
+                const tagIdx = tags.findIndex((tag) => tag.tag === lines[i].tags[j]);
+                if (tagIdx === -1) {
+                    tags.push({tag: lines[i].tags[j], count: 1, frequency: 1/lines.length});
+                }
+                else {
+                    tags[tagIdx].count++;
+                    tags[tagIdx].frequency = tags[tagIdx].count/lines.length;
+                }
+            }
+        }
+    }
+
+    return tags.sort((a, b) => {
+        const freqA = Math.floor(a.frequency * 100);
+        const freqB = Math.floor(b.frequency * 100);
+        if (freqA === freqB) {
+            return a.tag > b.tag ? 1 : -1;
+        }
+        return (Math.floor(b.frequency * 100) - Math.floor(a.frequency * 100));
+    });
+}
+
+
 export function extractMainTagsWithCount(lines: IAccountLine[]): ITag[] {
     let tags: ITag[] = [];
 
@@ -412,4 +461,8 @@ export function computeQuartileValue(quartileIdx: number, data: number[]): numbe
         //coeff1 = 1, coeff2 = 1
 
     return  (data[lowerIdx] * coeff1 + data[upperIdx] * coeff2) / (coeff1 + coeff2);
+}
+
+export function filterLinesByTags(lines: IAccountLine[], tags: string): IAccountLine[] {
+    return lines.filter((line) => line.tags.join(">").startsWith(tags));
 }

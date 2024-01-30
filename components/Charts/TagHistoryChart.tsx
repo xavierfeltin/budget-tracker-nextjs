@@ -10,7 +10,7 @@ import {
   } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
 import { CHART_COLORS } from "./ColorBank";
-import { IAccountLine, aggregateByDate, aggregateByTags } from "../Data/Bank";
+import { IAccountLine, aggregateByDate, aggregateByTags, filterLinesByTags } from "../Data/Bank";
 import { Context } from "chartjs-plugin-datalabels";
 
 export interface InputRangeProps {
@@ -56,10 +56,15 @@ export function TagHistoryChart({
     const [chartData, setChartData] = useState<IChartData>({labels: [], datasets: []});
 
     useEffect(() => {
+        debugger;
         let datasets: IChartDataset[] = [];
 
-        const taggedLines = tag === "" ? accountLines : accountLines.filter((line) => line.tags.indexOf(tag) !== -1);
-        const groupByTag = aggregateByTags(taggedLines, -1, tag);
+        const splittedTags= tag === "" ? [] : tag.split(">");
+        const selectedTag = tag === "" ? "" : splittedTags[splittedTags.length - 1];
+        //const taggedLines = tag === "" ? accountLines : accountLines.filter((line) => line.tags.indexOf(tag) !== -1);
+        const taggedLines = tag === "" ? accountLines : filterLinesByTags(accountLines, tag);
+
+        const groupByTag = aggregateByTags(taggedLines, -1, selectedTag);
         const tags = Object.keys(groupByTag).sort();
 
         const groupByDate = aggregateByDate(taggedLines);
@@ -72,14 +77,14 @@ export function TagHistoryChart({
         const processedTags: string[] = [];
         for (let i = 0; i < tags.length; i++) {
             let subTaggedLines: IAccountLine[] = [];
-            if (tag === "") {
+            if (selectedTag === "") {
                 // Search only the first level of tags
                 subTaggedLines = taggedLines.filter((line) => line.tags.indexOf(tags[i]) === 0);
             }
             else {
                 // Search any lines containing the tag but no other tags already processed
                 subTaggedLines = taggedLines.filter((line) => {
-                    const tagIdx = line.tags.indexOf(tag);
+                    const tagIdx = line.tags.indexOf(selectedTag);
                     if (tagIdx < (line.tags.length - 1)) {
                         //Tag is not the last tag of the line
                         return line.tags.indexOf(tags[i]) === (tagIdx + 1) //&& !line.tags.some(t => processedTags.includes(t)
@@ -147,7 +152,7 @@ export function TagHistoryChart({
                 },
                 title: {
                     display: true,
-                    text: "Debit history of " + (tag || "Tous"),
+                    text: "Debit history of " + (selectedTag || "Tous"),
                     padding: {
                         top: 5,
                         bottom: 25

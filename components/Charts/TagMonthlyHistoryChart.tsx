@@ -12,7 +12,7 @@ import {
   } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
 import { CHART_COLORS } from "./ColorBank";
-import { IAccountLine, aggregateByDate, aggregateByTags } from "../Data/Bank";
+import { IAccountLine, aggregateByDate, aggregateByTags, filterLinesByTags } from "../Data/Bank";
 import { Context } from "chartjs-plugin-datalabels";
 
 export interface InputRangeProps {
@@ -62,7 +62,9 @@ export function TagHistoryMonthlyChart({
 
     useEffect(() => {
         let datasets: IChartDataset[] = [];
-        const taggedLines = tag === "" ? accountLines : accountLines.filter((line) => line.tags.indexOf(tag) !== -1);
+        //const taggedLines = tag === "" ? accountLines : accountLines.filter((line) => line.tags.indexOf(tag) !== -1);
+        const taggedLines = tag === "" ? accountLines : filterLinesByTags(accountLines, tag);
+
         const groupByTag = aggregateByTags(taggedLines, -1, tag);
         const tags = Object.keys(groupByTag).sort();
 

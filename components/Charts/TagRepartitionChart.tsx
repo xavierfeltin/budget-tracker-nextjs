@@ -10,7 +10,7 @@ import { Pie } from 'react-chartjs-2';
 import { Context } from 'chartjs-plugin-datalabels';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { PIE_BACKGROUND_COLORS, PIE_BORDER_COLORS } from "./ColorBank";
-import { IAccountLine, aggregateByTags } from "../Data/Bank";
+import { IAccountLine, aggregateByTags, filterLinesByTags } from "../Data/Bank";
 
 export interface InputRangeProps {
     accountLines: IAccountLine[];
@@ -53,8 +53,12 @@ export function TagRepartitionChart({
     const [chartData, setChartData] = useState<IChartData>({labels: [], datasets: []});
 
     useEffect(() => {
-        const taggedLines = tag === "" ? accountLines : accountLines.filter((line) => line.tags.indexOf(tag) !== -1);
-        const groupByTag = aggregateByTags(taggedLines, -1, tag);
+        const splittedTags= tag === "" ? [] : tag.split(">");
+        const selectedTag = tag === "" ? "" : splittedTags[splittedTags.length - 1];
+        //const taggedLines = tag === "" ? accountLines : accountLines.filter((line) => line.tags.indexOf(tag) !== -1);
+        const taggedLines = tag === "" ? accountLines : filterLinesByTags(accountLines, tag);
+
+        const groupByTag = aggregateByTags(taggedLines, -1, selectedTag);
 
         // Datasets to cover the sub tags
         const tags = Object.keys(groupByTag).filter((subTag) => groupByTag[subTag].debit !== 0).sort();
@@ -69,7 +73,7 @@ export function TagRepartitionChart({
             else {
                 // Search any lines containing the tag but no other tags already processed
                 subTaggedLines = taggedLines.filter((line) => {
-                    const tagIdx = line.tags.indexOf(tag);
+                    const tagIdx = line.tags.indexOf(selectedTag);
                     if (tagIdx < (line.tags.length - 1)) {
                         //Tag is not the last tag of the line
                         return line.tags.indexOf(tags[i]) === (tagIdx + 1) //&& !line.tags.some(t => processedTags.includes(t)
@@ -126,7 +130,7 @@ export function TagRepartitionChart({
                 },
                 title: {
                     display: false,
-                    text: "Repartition of " + (tag || "Tous")
+                    text: "Repartition of " + (selectedTag || "Tous")
                 },
                 datalabels: {
                     borderRadius: 25,

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { IAccountLine } from "../Data/Bank";
+import { IAccountLine, filterLinesByTags } from "../Data/Bank";
 
 export interface InputRangeProps {
     accountLines: IAccountLine[];
@@ -14,7 +14,8 @@ export function Lines({
     const [lines, setLines] = useState<IAccountLine[]>([])
 
     useEffect(() => {
-        const taggedLines = tag === "" ? accountLines : accountLines.filter((line) => line.tags.indexOf(tag) !== -1);
+        const taggedLines = tag === "" ? accountLines : filterLinesByTags(accountLines, tag);
+        //const taggedLines = tag === "" ? accountLines : accountLines.filter((line) => line.tags.indexOf(tag) !== -1);
         setLines(taggedLines);
     }, [accountLines, tag])
 

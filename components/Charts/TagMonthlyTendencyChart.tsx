@@ -12,7 +12,7 @@ import {
   } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 import { CHART_COLORS } from "./ColorBank";
-import { IAccountLine, aggregateByDate, aggregateByTags } from "../Data/Bank";
+import { IAccountLine, aggregateByDate, aggregateByTags, filterLinesByTags } from "../Data/Bank";
 import { Context } from "chartjs-plugin-datalabels";
 
 export interface InputRangeProps {
@@ -69,8 +69,12 @@ export function TagMonthlyTendencyChart({
 
     useEffect(() => {
         let datasets: IChartDataset[] = [];
-        const taggedLines = tag === "" ? accountLines : accountLines.filter((line) => line.tags.indexOf(tag) !== -1);
-        const groupByTag = aggregateByTags(taggedLines, -1, tag);
+        const splittedTags= tag === "" ? [] : tag.split(">");
+        const selectedTag = tag === "" ? "" : splittedTags[splittedTags.length - 1];
+        //const taggedLines = tag === "" ? accountLines : accountLines.filter((line) => line.tags.indexOf(tag) !== -1);
+        const taggedLines = tag === "" ? accountLines : filterLinesByTags(accountLines, tag);
+
+        const groupByTag = aggregateByTags(taggedLines, -1, selectedTag);
         const tags = Object.keys(groupByTag).sort();
 
         const groupByDate = aggregateByDate(taggedLines, true);
@@ -119,7 +123,7 @@ export function TagMonthlyTendencyChart({
 
         setChartData(dataToDisplay);
 
-        let title = ["Debit monthly history of " + (tag || "Tous")];
+        let title = ["Debit monthly history of " + (selectedTag || "Tous")];
         if (allowedAmount > 0) {
             title.push("Allowed budget " + allowedAmount.toFixed(2));
         }

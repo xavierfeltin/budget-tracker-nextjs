@@ -64,6 +64,9 @@ export function TagMonthBarChart({
     const [chartData, setChartData] = useState<IChartData>({labels: [], datasets: []});
 
     useEffect(() => {
+        const splittedTags= tag === "" ? [] : tag.split(">");
+        const selectedTag = tag === "" ? "" : splittedTags[splittedTags.length - 1];
+
         const sortedIdx = data.map((d: number, idx: number) => {return {id: idx, data: d}}).sort((a, b) => b.data - a.data).map((t) => t.id);
 
         const sortedLabels: string[] = [];
@@ -77,7 +80,7 @@ export function TagMonthBarChart({
         }
 
         const dataset: IChartDataset = {
-            label: "Debit " + tag + " for " + period,
+            label: "Debit " + selectedTag + " for " + period,
             yAxisID: 'y',
             data: sortedData,
             backgroundColor: colors

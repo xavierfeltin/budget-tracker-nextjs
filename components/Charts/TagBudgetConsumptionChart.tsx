@@ -11,7 +11,7 @@ import {
   } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 import { CHART_COLORS } from "./ColorBank";
-import { IAccountLine } from "../Data/Bank";
+import { IAccountLine, filterLinesByTags } from "../Data/Bank";
 
 export interface InputRangeProps {
     accountLines: IAccountLine[];
@@ -70,7 +70,10 @@ export function TagBudgetConsumptionChart({
         const budgetConsumption: number[] = [];
         let consumed = 0;
 
-        const taggedLines = tag === "" ? accountLines : accountLines.filter((line) => line.tags.indexOf(tag) !== -1);
+        const splittedTags= tag === "" ? [] : tag.split(">");
+        const selectedTag = tag === "" ? "" : splittedTags[splittedTags.length - 1];
+        //const taggedLines = tag === "" ? accountLines : accountLines.filter((line) => line.tags.indexOf(tag) !== -1);
+        const taggedLines = tag === "" ? accountLines : filterLinesByTags(accountLines, tag);
 
         if (taggedLines.length === 1) {
             dateLabels.push(taggedLines[0].date.toLocaleDateString("fr-FR"));
