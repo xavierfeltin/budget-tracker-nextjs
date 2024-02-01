@@ -79,7 +79,7 @@ export function GoogleLogin({
             'includeItemsFromAllDrives': true,
             'supportsAllDrives': true,
             'orderBy': 'name',
-            'q': "'" + folderId + "' in parents and mimeType='text/csv'",
+            'q': "'" + folderId + "' in parents and mimeType='text/csv' and trashed=false",
             'fields': 'files(id, name)'
             });
         } catch (err) {
